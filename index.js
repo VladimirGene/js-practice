@@ -1,1 +1,6 @@
-console.log('hello world')
+
+
+function getLog(name) {
+  console.log(name)
+}
+getLog("Piter")
