@@ -30,9 +30,9 @@ console.log(a);
 var a = 3
 console.log(a);
 
-console.log(b);
-let b = 2
-console.log(b);
+	console.log(b)
+	let b = 2
+	console.log(b)
 }
 
 // (var) объявление поднимается и инициализируется, выводя undefined
@@ -43,7 +43,7 @@ console.log(b);
 // 1. Создай переменные со значениями всех основных типов: string, number, boolean, null, undefined, object, symbol, bigint
 // 2. Выведи в консоль их типы через typeof
 
-const c = "string"
+const c = 'string'
 console.log(typeof c)
 
 const d = 10
@@ -78,7 +78,7 @@ console.log(typeof k)
 //    (Подумай, почему результаты отличаются)
 // 5. Создай переменную со значением true и попробуй выполнить с ней сложение с числом
 
-let l = "15"
+let l = '15'
 let m = 10
 
 console.log(l + m); /*происходит неявное преобразование в строку.конкатенация*/
