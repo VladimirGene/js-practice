@@ -24,33 +24,11 @@ if (userInput > 10) {
 // Выведи результат в console.log
 
 const age = 20
-let hasTicket = true
-let isVIP = false
+const hasTicket = true
+const isVIP = false
 
-// Проверка на возраст и наличие билета
-
-if (age >= 18 && hasTicket) {
-	console.log('Вход разрешен (есть билет)')
-} else {
-	console.log('Вход запрещен')
-}
-
-// Проверка нет билета нет VIP
-
-hasTicket = false
-
-if ((age >= 18 && hasTicket) || isVIP) {
+if (age >= 18 && (hasTicket || isVIP)) {
 	console.log('Вход разрешен')
-} else {
-	console.log('Вход запрещен нет билета, гость не VIP')
-}
-
-// Проверка VIP без билета
-
-isVIP = true
-
-if ((age >= 18 && hasTicket) || isVIP) {
-	console.log('Вход разрешен гость VIP(билет не нужен)')
 } else {
 	console.log('Вход запрещен')
 }
@@ -62,11 +40,7 @@ if ((age >= 18 && hasTicket) || isVIP) {
 //    либо "Гость", если он нажал Отмена или ничего не ввёл
 
 let username = prompt('Введите имя:')
-if (username === '') {
-	alert('Гость')
-} else {
-	alert(username ?? 'Гость')
-}
+alert((username ?? 'Гость') || 'Гость')
 
 // ЗАДАЧА 4: Логическое отрицание !
 // 1. Спроси у пользователя с помощью confirm("Вы старше 18?")
