@@ -3,24 +3,43 @@
 // 2. Если имя не передано — используй значение по умолчанию "Гость"
 // 3. Вызови функцию 3 раза с разными аргументами
 function sayHello(name = 'Гость') {
-		return `Привет, ${name}`
+	return console.log(`Привет, ${name}`)
 }
-console.log(sayHello('Владимир'))
-console.log(sayHello('Анна'))
-console.log(sayHello())
+sayHello('Владимир')
+sayHello('Анна')
+sayHello()
 
 // ЗАДАЧА 2: Параметры, аргументы и return
 // 1. Создай функцию sum(a, b), которая возвращает сумму двух чисел
 // 2. Выведи результат её работы в console.log
 // 3. Сделай вторую функцию multiply(a, b), где b имеет значение по умолчанию
-console.log(/* твой код */)
+function sum(a, b) {
+	return a + b
+}
+console.log(sum(5, 10))
+
+function multiply(a, b = 5) {
+	return console.log(a * b)
+}
+multiply(5)
 
 // ЗАДАЧА 3: Область видимости
 // 1. Создай переменную outside = "Я снаружи"
 // 2. Создай функцию testScope(), внутри которой объяви переменную inside = "Я внутри"
 // 3. Попробуй вывести inside снаружи функции (ожидаем ошибку)
 // 4. Выведи outside внутри функции. Объясни результат
-console.log(/* твой код */)
+
+const outside = 'Я снаружи'
+
+function testScope() {
+	const inside = 'Я внутри'
+	console.log(outside)
+}
+testScope()
+console.log(inside)
+
+// У outside область видимости глобальная, поэтому вызов будет работать при вызове функции
+// у inside область видимости функциональная и поэтому за пределами функциями она не определена и выдает Uncaught ReferenceError: inside is not defined
 
 // ЗАДАЧА 4: Виды функций — практика
 // 1. Создай function declaration
