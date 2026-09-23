@@ -29,14 +29,14 @@ multiply(5)
 // 3. Попробуй вывести inside снаружи функции (ожидаем ошибку)
 // 4. Выведи outside внутри функции. Объясни результат
 
-const outside = 'Я снаружи'
+// const outside = 'Я снаружи'
 
-function testScope() {
-	const inside = 'Я внутри'
-	console.log(outside)
-}
-testScope()
-console.log(inside)
+// function testScope() {
+// 	const inside = 'Я внутри'
+// 	console.log(outside)
+// }
+// testScope()
+// console.log(inside)
 
 // У outside область видимости глобальная, поэтому вызов будет работать при вызове функции
 // у inside область видимости функциональная и поэтому за пределами функциями она не определена и выдает Uncaught ReferenceError: inside is not defined
@@ -46,37 +46,118 @@ console.log(inside)
 // 2. Создай function expression
 // 3. Создай стрелочную функцию
 // 4. Все функции должны выводить разные фразы
-console.log(/* твой код */)
+
+//  1. function declaration
+function helloGermany() {
+	console.log('Приветствие на немецком - Guten Tag!')
+}
+helloGermany()
+
+// 2. function expression
+const helloSpanish = function () {
+	console.log('Приветствие на испанском - ¡Buenos días!')
+}
+helloSpanish()
+
+// 3. стрелочная функцию
+const helloJapan = () => {
+	console.log('Приветствие на японском - こんにちは')
+}
+helloJapan()
 
 // ЗАДАЧА 5: Callback-функции
 // 1. Создай функцию calc(a, b, operation), где operation — callback
 // 2. Передай в неё callback для сложения, затем для умножения
-console.log(/* твой код */)
+function calc(a, b, operation) {
+	operation(a, b)
+}
+
+function sumNumbers(x, y) {
+	console.log(x + y)
+}
+
+function multiplyNumbers(x, y) {
+	console.log(x * y)
+}
+
+calc(5, 6, sumNumbers)
+calc(5, 6, multiplyNumbers)
 
 // ЗАДАЧА 6: arguments — работа с неизвестным числом аргументов
 // 1. Создай функцию logAll(), которая выводит ВСЕ переданные аргументы
 // 2. Вызови её с разным количеством аргументов
-console.log(/* твой код */)
-
+function logAll() {
+	for (let i = 0; i < arguments.length; i++) {
+		console.log(arguments[i])
+	}
+}
+logAll('Первый аргумент', 'Второй аргумент', 'Третий аргумент')
+logAll('Anna', 'Alex', 'Bob')
+logAll(1, 2, 3, 4, 5)
 // ЗАДАЧА 7: Замыкание — базовая практика
 // 1. Создай функцию createCounter(), которая возвращает внутреннюю функцию
 // 2. Внутренняя функция должна увеличивать счётчик и выводить его
 // 3. Создай два независимых счётчика и протестируй
-console.log(/* твой код */)
 
+function createCounter(message) {
+	let count = 0
+	return function () {
+		count++
+		console.log(`${message}: ${count}`)
+	}
+}
+
+const counter = createCounter('Счётчик 1')
+const counter2 = createCounter('Счётчик 2')
+
+counter()
+counter()
+counter()
+counter()
+counter2()
+counter2()
+counter2()
 // ЗАДАЧА 10: Замыкание — параметризация
 // 1. Создай функцию makeAdder(n), которая возвращает функцию,
 //    прибавляющую к числу значение n
 // 2. Например: const add5 = makeAdder(5); add5(10) → 15
-console.log(/* твой код */)
+function makeAdder(n) {
+	return function (x) {
+		return x + n
+	}
+}
+
+const add5 = makeAdder(5)
+
+console.log(add5(5))
+console.log(add5(10))
 
 // ЗАДАЧА 11: Рекурсия — факториал
 // 1. Создай функцию factorial(n), которая считает факториал рекурсивно
 // 2. Вызови её для нескольких значений
 // P.S. Формулу факториала можно подгуглить, только формулу, без решения в коде
-console.log(/* твой код */)
+function factorial(n) {
+	if (n <= 0) return 1
+
+	return n * factorial(n - 1)
+}
+
+const result = factorial(5)
+const result2 = factorial(6)
+console.log(result)
+console.log(result2)
 
 // ЗАДАЧА 12: Рекурсия — вывод чисел от N до 1
 // 1. Создай функцию printDown(n), которая выводит числа: n, n-1, ..., 1
 // 2. Используй только рекурсию
-console.log(/* твой код */)
+
+function printDown(n) {
+	console.log(n)
+
+	if (n === 1) return 1
+
+	printDown(n - 1)
+}
+
+printDown(5)
+printDown(10)
