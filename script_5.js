@@ -19,9 +19,12 @@ function sum(a, b) {
 console.log(sum(5, 10))
 
 function multiply(a, b = 5) {
-	return console.log(a * b)
+	return a * b
 }
-multiply(5)
+const resultMultiply = multiply(5)
+
+console.log(resultMultiply);
+
 
 // ЗАДАЧА 3: Область видимости
 // 1. Создай переменную outside = "Я снаружи"
@@ -69,7 +72,7 @@ helloJapan()
 // 1. Создай функцию calc(a, b, operation), где operation — callback
 // 2. Передай в неё callback для сложения, затем для умножения
 function calc(a, b, operation) {
-	operation(a, b)
+	return operation(a, b)
 }
 
 function sumNumbers(x, y) {
