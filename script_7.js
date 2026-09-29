@@ -14,7 +14,7 @@ const transformString = str => {
 	const transformedValue =
 		str.trim().toUpperCase().replace(/A/gi, '@').slice(4, 13) + '-'
 	const repeatTransformedValue = transformedValue.repeat(3)
-	const resultStr = `🔥${repeatTransformedValue}🔥`
+	const resultStr = `🔥${repeatTransformedValue.slice(0, -1)}🔥`
 	return resultStr
 }
 
@@ -59,7 +59,8 @@ function validateUsername(username) {
 		cleanedUsername.length < 4 ||
 		cleanedUsername.length > 16 ||
 		!Number.isNaN(Number(cleanedUsername[0])) ||
-		cleanedUsername.includes(' ')
+		cleanedUsername.includes(' ') ||
+		!/^\p{L}+$/u.test(cleanedUsername[0])
 	) {
 		return false
 	}
@@ -72,6 +73,8 @@ function validateUsername(username) {
 validateUsername('123John') // false (начинается не с буквы)
 validateUsername('John Doe') // false (пробел)
 validateUsername('ab') // false (слишком короткий)
+validateUsername('__ab')
+validateUsername('(ab')
 
 // Задание 4.
 const rawPhone = '  7 923 456-78-90  '
@@ -84,8 +87,8 @@ const rawPhone2 = '  '
 
 const updatePhone = number => {
 	const trimmedNumber = number.trim()
+	if (trimmedNumber === '') return 'Номер не указан'
 	const cleanNumber = trimmedNumber.replaceAll(' ', '').replaceAll('-', '')
-	if (cleanNumber === '') return 'Номер не указан'
 	const withPlusNumber = `+${cleanNumber}`
 	const countryCode = withPlusNumber.slice(0, 2)
 	const operatorCode = withPlusNumber.slice(2, 5)
@@ -101,28 +104,31 @@ console.log('4.', updatePhone(rawPhone2))
 
 // Задание 5.
 const sentence = 'Я изучаю JavaScript каждый день'
-const sentence2 = ''
+const sentence2 = 'Я изучаю JavaScript'
+const sentence3 = ' '
 // Посчитай количество слов в предложении БЕЗ split() и без массивов!
-// Подсказка: перебирай строку посимвольно и считай переходы с пробела на непробел
+// Подсказка: перебирай строку посимвольно и считай переходы с пробела на не пробел
 // Выведи: "В предложении 6 слов"
 function findLength(sentence) {
 	let count = 0
+	let prevChar = ''
 	const cleanSentence = sentence.trim()
 	if (cleanSentence === '') {
 		console.log('5. В строке нет слов')
-		return false
+		return 0
 	}
-	for (let i = 0; i < cleanSentence.length; i++) {
-		if (cleanSentence[i] === ' ') {
+	for (let currChar of cleanSentence) {
+		if (prevChar === ' ' && currChar !== ' ') {
 			count++
 		}
+		prevChar = currChar
 	}
 
 	console.log(`5. В предложении ${count + 1} слов`)
-	return count
 }
 findLength(sentence)
 findLength(sentence2)
+findLength(sentence3)
 
 // Задание 6.
 const fullName = ' иванов Сергей Петрович '
@@ -134,10 +140,10 @@ const fullName2 = '   петров пЕтр ВаСильевич '
 // - Инициалы от имени и отчества — заглавные с точкой
 // - Всё без массивов и split!
 
+const initial = str => str[0].toUpperCase()
+
 const formatNameWithInitials = name => {
 	const cleanValue = name.trim().toLowerCase()
-
-	const initial = str => str[0].toUpperCase()
 
 	const firstSpace = cleanValue.indexOf(' ')
 	const secondSpace = cleanValue.indexOf(' ', firstSpace + 1)
@@ -146,9 +152,7 @@ const formatNameWithInitials = name => {
 	const firstName = cleanValue.slice(firstSpace + 1, secondSpace)
 	const middleName = cleanValue.slice(secondSpace + 1)
 
-	return `${initial(surname) + surname.slice(1)} 
-	${initial(firstName)}. 
-	${initial(middleName)}.`
+	return `${initial(surname) + surname.slice(1)} ${initial(firstName)}.${initial(middleName)}.`
 }
 
 console.log('6.', formatNameWithInitials(fullName))
