@@ -11,14 +11,11 @@
 const str = ' javascript is awesome '
 
 const transformString = str => {
-	const deleteSpace = str.trim()
-	const toUpperCase = deleteSpace.toUpperCase()
-	const changeLetter = toUpperCase.replace(/A/gi, '@')
-	const sliceStr = changeLetter.slice(4, 13)
-	const repeat = (text, count) => text.repeat(count)
-	const repeatStr = repeat(`${sliceStr}-`, 3)
-	const replaceSymbol = `🔥${repeatStr}🔥`
-	return replaceSymbol
+	const transformedValue =
+		str.trim().toUpperCase().replace(/A/gi, '@').slice(4, 13) + '-'
+	const repeatTransformedValue = transformedValue.repeat(3)
+	const resultStr = `🔥${repeatTransformedValue}🔥`
+	return resultStr
 }
 
 console.log(transformString(str))
@@ -37,13 +34,13 @@ const transformPrice = price => {
 	const roundingPrice = Number(price.toFixed(2))
 	const priceThousandsSep = roundingPrice.toLocaleString()
 	const checkPriceIsInteger = Number.isInteger(roundingPrice)
-	const roundingPrice2 = Math.floor(roundingPrice * 10) / 10
+	const flooredPrice = Math.floor(roundingPrice * 10) / 10
 
 	console.log('2.1', 'Округленная цена:', roundingPrice)
 	console.log('2.2', `${priceThousandsSep} ₽`)
 	console.log('2.3 Число не целое', checkPriceIsInteger)
-	console.log('2.4', roundingPrice2)
-	console.log('2.4', roundingPrice2.toString() + ' ₽')
+	console.log('2.4', flooredPrice)
+	console.log('2.4', flooredPrice.toString() + ' ₽')
 }
 
 transformPrice(price)
@@ -140,19 +137,18 @@ const fullName2 = '   петров пЕтр ВаСильевич '
 const formatNameWithInitials = name => {
 	const cleanValue = name.trim().toLowerCase()
 
+	const initial = str => str[0].toUpperCase()
+
 	const firstSpace = cleanValue.indexOf(' ')
 	const secondSpace = cleanValue.indexOf(' ', firstSpace + 1)
 
 	const surname = cleanValue.slice(0, firstSpace)
-	const formattedSurname = surname[0].toUpperCase() + surname.slice(1)
-
 	const firstName = cleanValue.slice(firstSpace + 1, secondSpace)
-	const firstInitial = firstName[0].toUpperCase()
-
 	const middleName = cleanValue.slice(secondSpace + 1)
-	const middleInitial = middleName[0].toUpperCase()
 
-	return `${formattedSurname} ${firstInitial}. ${middleInitial}.`
+	return `${initial(surname) + surname.slice(1)} 
+	${initial(firstName)}. 
+	${initial(middleName)}.`
 }
 
 console.log('6.', formatNameWithInitials(fullName))
