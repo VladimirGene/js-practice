@@ -49,7 +49,7 @@ console.log('ЗАДАЧА 3 -', numbersPlusTen)
 	)
 	console.log(
 		'ЗАДАЧА 5.3 -',
-		numbers.some(number => number % 2 === 0),
+		numbers.every(number => number % 2 === 0),
 	)
 }
 
@@ -57,9 +57,11 @@ console.log('ЗАДАЧА 3 -', numbersPlusTen)
 // 1. Используя numbers = [1, 2, 3, 4, 5], посчитай сумму всех элементов через reduce
 // 2. Посчитай произведение всех элементов через reduce
 
-const numbersSum = numbers.reduce((sum, number) => (sum += number), 0)
+const numbersSum = numbers.reduce((sum, number) => sum + number, 0)
+const numbersMultiply = numbers.reduce((acc, number) => acc * number, 1)
 
-console.log('ЗАДАЧА 6 -', numbersSum)
+console.log('ЗАДАЧА 6.1 -', numbersSum)
+console.log('ЗАДАЧА 6.2 -', numbersMultiply)
 
 // ЗАДАЧА 7: includes и indexOf
 // 1. Пусть fruits = ["apple", "banana", "orange"]
