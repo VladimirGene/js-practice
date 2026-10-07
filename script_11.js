@@ -147,9 +147,6 @@ class Rectangle {
 		this.#width = value
 	}
 
-	get width() {
-		return this.#width
-	}
 
 	get area() {
 		return `${this.#width * this.height} m.2`
