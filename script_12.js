@@ -96,16 +96,18 @@ const divide = function (a, b) {
 	return a / b
 }
 
-const tryDivide = function (a, b) {
-	try {
-		console.log(divide(a, b))
-	} catch (error) {
-		console.error(error.message)
-	}
+try {
+	console.log(divide(190, 10))
+} catch (error) {
+	console.error(error.message)
 }
 
-tryDivide(190, 10)
-tryDivide(5, 0)
+try {
+	console.log(divide(5, 0))
+} catch (error) {
+	console.error(error.message)
+}
+
 console.log('ЗАДАЧА 6 - Конец кода')
 // ЗАДАЧА 7: Проверка типа ошибки
 // 1. Сделай JSON.parse("НЕ JSON")
