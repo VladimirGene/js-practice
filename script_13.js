@@ -1,37 +1,91 @@
 // ЗАДАЧА 1: Создание простого промиса
 // 1. Создай промис, который через 1 секунду resolve-ит строку "Готово!"
 // 2. Обработай его и выведи результат
-console.log(/* твой код */);
+{
+	const promise = new Promise(resolve => {
+		console.log('Начало, состояние pending...')
+		setTimeout(() => {
+			resolve('Готово!')
+		}, 1000)
+	})
 
+	promise.then(successData => {
+		console.log(successData)
+	})
+}
 // ЗАДАЧА 2: Промис с ошибкой
 // 1. Создай промис, который через 3 секунды падает с ошибкой (ОШИБКА!)
 // 2. Обработай его и выведи сообщение об ошибке
-console.log(/* твой код */);
+{
+	const promise = new Promise((resolve, reject) => {
+		setTimeout(() => {
+			reject('ОШИБКА!')
+		}, 3000)
+	})
+	promise
+		.then(successData => {
+			console.log(successData)
+		})
+		.catch(errorData => {
+			console.error(errorData)
+		})
+}
 
 // ЗАДАЧА 3: Цепочки промисов
 // 1. Создай промис, который возвращает число 5
 // 2. Дальше нужно умножить результат промиса на 10 и снова обернуть это в промис (в одну строчку! Никаких new Promise()))
 // 3. Далее повтори то же самое, только к полученному числу прибавь 2 и выведи результат
-console.log(/* твой код */);
+{
+	const promise = new Promise((resolve, reject) => {
+		resolve(5)
+	})
+	promise
+		.then(successData => {
+			console.log(successData)
+			return successData
+		})
+		.then(successData => {
+			console.log(successData * 10)
+			return successData * 10
+		})
+		.then(successData => {
+			console.log(successData + 2)
+		})
+		.catch(errorData => {
+			console.error(errorData)
+		})
+}
 
 // ЗАДАЧА 4: async/await базовый
 // 1. Создай функцию delay(ms), которая возвращает промис,
 //    resolve-ящийся через ms миллисекунд
-// 2. Создай async функцию run()
+// 2. Создай c
 // 3. Внутри run подожди 1 секунду с помощью функции delay и потом выведи "Прошло N секунд"
 // 4. Вызови run()
-console.log(/* твой код */);
+function delay(ms) {
+	return new Promise(resolve => {
+		setTimeout(() => {
+			resolve(ms / 1000)
+		}, ms)
+	})
+}
+
+async function run() {
+	const second = await delay(1000)
+	console.log(`Прошло ${second} секунда`)
+}
+run()
 
 // ЗАДАЧА 5: try/catch в async/await
 // 1. Создай функцию getError(), которая возвращает промис с reject("Ошибка!")
 // 2. Создай async функцию test()
 // 3. Внутри функции test() вызови await getError() и посмотри на результат. Если будет ошибка, обработай ее
-console.log(/* твой код */);
+console.log(/* твой код */)
 
 // ЗАДАЧА 6: Знания async/await
 // 1. Создай async функцию f(), которая возвращает число 42
 // 2. Почему если обратиться к f(), то у нее можно вызвать .then()?
-console.log(/* твой код */);
+console.log(/* твой код */)
 
 // ЗАДАЧА 7: Мини-проект "Имитация запроса"
 // 1. Создай функцию fakeFetch(url), которая:
@@ -41,34 +95,36 @@ console.log(/* твой код */);
 // 3. Используй try/catch
 // 4. Выведи либо успешный результат, либо ошибку
 // 5. Проверь работу с "/success" и "/error"
-console.log(/* твой код */);
+console.log(/* твой код */)
 
 // ЗАДАЧА 8: Event Loop
 // Объясни, почему ошибка не ловится?
-try {
-  setTimeout(() => { throw new Error("Boom") }, 0);
-  } catch(e) {
-  console.log("Caught!", e);
-}
+// try {
+// 	setTimeout(() => {
+// 		throw new Error('Boom')
+// 	}, 0)
+// } catch (e) {
+// 	console.log('Caught!', e)
+// }
 // И расскажи про подходы, как можно такие ошибки ловить?
 
 // ЗАДАЧА 9: Предсказать порядок вывода в консоль, без подсмотра в консоль. И объяснить результат:
-console.log(1);
+// console.log(1)
 
-setTimeout(() => console.log(2), 0);
+// setTimeout(() => console.log(2), 0)
 
-Promise.resolve().then(() => console.log(3));
+// Promise.resolve().then(() => console.log(3))
 
-console.log(4);
+// console.log(4)
 
 // ЗАДАЧА 10: Напиши функцию, которая принимает СИНХРОННУЮ операцию, но выполняет ее всегда асинхронно.
 // То есть:
-addToQueue(() => console.log("A")); // вторым
-console.log("B"); // оно должно быть первым
+// addToQueue(() => console.log('A')) // вторым
+// console.log('B') // оно должно быть первым
 
 // ЗАДАЧА 11: Что выведется и почему?
-setTimeout(() => console.log(1));
-setTimeout(() => console.log(2), 10);
-setTimeout(() => console.log(3), 0);
+// setTimeout(() => console.log(1))
+// setTimeout(() => console.log(2), 10)
+// setTimeout(() => console.log(3), 0)
 
-console.log(4);
+// console.log(4)
