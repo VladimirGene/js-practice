@@ -71,8 +71,7 @@ function delay(ms) {
 }
 
 async function run() {
-	const second = await delay(1000)
-	console.log(`Прошло ${second} секунда`)
+	console.log(`Прошло ${await delay(1000)} секунда`)
 }
 run()
 
@@ -80,12 +79,30 @@ run()
 // 1. Создай функцию getError(), которая возвращает промис с reject("Ошибка!")
 // 2. Создай async функцию test()
 // 3. Внутри функции test() вызови await getError() и посмотри на результат. Если будет ошибка, обработай ее
-console.log(/* твой код */)
+function getError() {
+	return new Promise((resolve, reject) => {
+		reject('Ошибка!')
+	})
+}
+
+async function test() {
+	try {
+		await getError()
+	} catch (error) {
+		console.error(error)
+	}
+}
+test()
 
 // ЗАДАЧА 6: Знания async/await
 // 1. Создай async функцию f(), которая возвращает число 42
 // 2. Почему если обратиться к f(), то у нее можно вызвать .then()?
-console.log(/* твой код */)
+
+const f = async () => 42
+
+f().then(data => console.log('Успешно:', data))
+
+// 'Так как функция создана через ключевое слово "async" то она по умолчанию будет возвращать промис, из за этого и получается что мы можем вызвать then у "f()"',
 
 // ЗАДАЧА 7: Мини-проект "Имитация запроса"
 // 1. Создай функцию fakeFetch(url), которая:
@@ -95,36 +112,95 @@ console.log(/* твой код */)
 // 3. Используй try/catch
 // 4. Выведи либо успешный результат, либо ошибку
 // 5. Проверь работу с "/success" и "/error"
-console.log(/* твой код */)
+function fakeFetch(url) {
+	return new Promise((resolve, reject) => {
+		if (url === '/success') {
+			setTimeout(() => {
+				resolve({ status: 200, data: 'ОК' })
+			}, 1000)
+		} else {
+			setTimeout(() => {
+				reject({ status: 404, message: 'Не найдено' })
+			}, 1000)
+		}
+	})
+}
+
+async function request(url) {
+	try {
+		await fakeFetch(url).then(data => {
+			console.log('Успешно', data)
+		})
+	} catch (error) {
+		console.error('Ошибка', error)
+	}
+}
+
+request('/success')
+request()
 
 // ЗАДАЧА 8: Event Loop
 // Объясни, почему ошибка не ловится?
-// try {
-// 	setTimeout(() => {
-// 		throw new Error('Boom')
-// 	}, 0)
-// } catch (e) {
-// 	console.log('Caught!', e)
-// }
+// try/catch завершается при исполнение синхронного кода и setTimeout уже начинает работу после завершения try/catch поэтому ошибка не поймать таким образом
+try {
+	setTimeout(() => {
+		throw new Error('Boom')
+	}, 0)
+} catch (e) {
+	console.log('Caught!', e)
+}
 // И расскажи про подходы, как можно такие ошибки ловить?
+//  надо изменить код и в setTimeout вложить try/catch
+
+setTimeout(() => {
+	try {
+		throw new Error('Boom')
+	} catch (e) {
+		console.log('Caught!', e)
+	}
+}, 0)
 
 // ЗАДАЧА 9: Предсказать порядок вывода в консоль, без подсмотра в консоль. И объяснить результат:
-// console.log(1)
 
-// setTimeout(() => console.log(2), 0)
+setTimeout(() => {
+	console.log(1)
 
-// Promise.resolve().then(() => console.log(3))
+	setTimeout(() => console.log(2), 0)
 
-// console.log(4)
+	Promise.resolve().then(() => console.log(3))
+
+	console.log(4)
+}, 4000)
+
+// 1 синхронный код сразу выполнится
+// 4 синхронный код сразу выполнится
+// 3 следом за ним начнется выполняться асинхронный код microtask(очередь задач)
+// 2 и последним будет асинхронный код macrotask (очередь событий)
 
 // ЗАДАЧА 10: Напиши функцию, которая принимает СИНХРОННУЮ операцию, но выполняет ее всегда асинхронно.
 // То есть:
 // addToQueue(() => console.log('A')) // вторым
 // console.log('B') // оно должно быть первым
 
-// ЗАДАЧА 11: Что выведется и почему?
-// setTimeout(() => console.log(1))
-// setTimeout(() => console.log(2), 10)
-// setTimeout(() => console.log(3), 0)
+const addToQueue = value => {
+	return new Promise(resolve => {
+		resolve(value)
+	})
+}
 
-// console.log(4)
+addToQueue('A').then(data => console.log(data))
+console.log('B')
+
+// ЗАДАЧА 11: Что выведется и почему?
+setTimeout(() => {
+	setTimeout(() => console.log(1))
+	setTimeout(() => console.log(2), 10)
+	setTimeout(() => console.log(3), 0)
+
+	console.log(4)
+}, 5000)
+
+// 4 синхронный код выполнится сразу
+// 1  зарегистрирован первым выполнится первым delay по умолчанию 0
+// 3  зарегистрирован третьим выполнится вторым delay 0 сек
+// 2  зарегистрирован вторым выполнится последним delay 10 сек
