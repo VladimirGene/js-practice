@@ -42,14 +42,15 @@
 	promise
 		.then(successData => {
 			console.log(successData)
-			return successData
+			return Promise.resolve(successData)
 		})
 		.then(successData => {
 			console.log(successData * 10)
-			return successData * 10
+			return Promise.resolve(successData * 10)
 		})
 		.then(successData => {
 			console.log(successData + 2)
+			return Promise.resolve(successData + 2)
 		})
 		.catch(errorData => {
 			console.error(errorData)
@@ -128,9 +129,8 @@ function fakeFetch(url) {
 
 async function request(url) {
 	try {
-		await fakeFetch(url).then(data => {
-			console.log('Успешно', data)
-		})
+		const res = await fakeFetch(url)
+		console.log('Успешно', res)
 	} catch (error) {
 		console.error('Ошибка', error)
 	}
@@ -182,13 +182,12 @@ setTimeout(() => {
 // addToQueue(() => console.log('A')) // вторым
 // console.log('B') // оно должно быть первым
 
-const addToQueue = value => {
-	return new Promise(resolve => {
-		resolve(value)
-	})
+async function addToQueue(callback) {
+	await Promise.resolve()
+	callback()
 }
 
-addToQueue('A').then(data => console.log(data))
+addToQueue(() => console.log('A'))
 console.log('B')
 
 // ЗАДАЧА 11: Что выведется и почему?
