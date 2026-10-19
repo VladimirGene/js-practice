@@ -120,7 +120,19 @@ btnDelete.forEach(button => {
   1. Каждому li добавь data-id с уникальным номером
   2. Выведи data-id при клике на li в консоль
 */
-console.log(/* твой код */)
+
+let count = 1
+
+function addedNumberId() {
+	return count++
+}
+
+listTask.forEach(el => {
+	el.setAttribute('data-id', addedNumberId())
+	el.addEventListener('click', () => {
+		console.log(el.dataset.id)
+	})
+})
 
 /*
   ЗАДАЧА 9: Создание модального окна (простая версия)
