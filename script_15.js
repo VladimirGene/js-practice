@@ -4,7 +4,11 @@
   2. Внутрь div добавь текст: "Это динамически созданный блок"
   3. Добавь этот div в body
 */
-console.log(/* твой код */)
+
+const newCard = document.createElement('div')
+newCard.textContent = 'Это динамически созданный блок'
+newCard.classList.add('card')
+document.body.prepend(newCard)
 
 /*
   ЗАДАЧА 2: Изменение стилей элемента
@@ -15,7 +19,15 @@ console.log(/* твой код */)
         - border-radius: 10px
         - margin-bottom: 20px
 */
-console.log(/* твой код */)
+
+const card = document.querySelector('.card')
+card.style.cssText = `
+  padding: 20px;
+  background: #f0f0f0;
+  border-radius: 10px;
+  margin-bottom: 20px;
+`
+
 /*
   ЗАДАЧА 3: Работа с атрибутами
   3. Создай <img>
@@ -23,7 +35,13 @@ console.log(/* твой код */)
   5. Задай alt = "Картинка"
   6. Добавь картинку под card
 */
-console.log(/* твой код */)
+
+const newImg = document.createElement('img')
+newImg.src = 'gaben.jpg'
+newImg.alt = 'Картинка'
+newImg.style.width = '300px'
+newImg.style.height = '200px'
+card.after(newImg)
 
 /*
   ЗАДАЧА 4: Добавление нескольких элементов из массива
@@ -32,8 +50,17 @@ console.log(/* твой код */)
   3. Для каждого элемента массива создай <li> и добавь текст
   4. Добавь ul в body
 */
-console.log(/* твой код */)
 
+const listItems = ['Пункт 1', 'Пункт 2', 'Пункт 3']
+
+const list = document.createElement('ul')
+
+listItems.forEach(text => {
+	const item = document.createElement('li')
+	item.textContent = text
+	list.append(item)
+})
+document.body.prepend(list)
 /*
   ЗАДАЧА 5: Навигация по DOM
   1. Найди <ul> в html разметке
@@ -42,21 +69,51 @@ console.log(/* твой код */)
         - последний li
         - всех детей ul одной строчкой
 */
-console.log(/* твой код */)
+const ul = document.querySelector('ul')
+
+const liFirst = ul.children[0]
+console.log(liFirst)
+
+const liLast = ul.children[ul.children.length - 1]
+console.log(liLast)
+
+const listLi = [...ul.children]
+console.log(listLi)
+
+const strLi = listLi.map(li => li.textContent).join(',')
+console.log(strLi)
 
 /*
   ЗАДАЧА 6: Обработчики событий
   1. Добавь кнопке (создай заранее <button> "Нажми меня") обработчик click
   2. При клике меняй цвет фона card, созданного ранее, на рандомный цвет
 */
-console.log(/* твой код */)
+
+const btn = document.querySelector('[data-js-btn]')
+btn.addEventListener('click', () => {
+	card.style.background = `hsl(${Math.random() * 360}, 70%, 50%)`
+})
 
 /*
   ЗАДАЧА 7: Удаление элементов
   1. Добавь каждому li кнопку "Удалить" (создавай при добавлении)
   2. При клике на "Удалить" — удалить соответствующий li
 */
-console.log(/* твой код */)
+
+const listTask = document.querySelectorAll('li')
+const addedBtn = `<button data-js-delete>Удалить</button>`
+
+listTask.forEach(el => {
+	el.insertAdjacentHTML('beforeend', addedBtn)
+})
+
+const btnDelete = document.querySelectorAll('[data-js-delete]')
+
+btnDelete.forEach(button => {
+	button.addEventListener('click', () => {
+		button.parentElement.remove()
+	})
+})
 
 /*
   ЗАДАЧА 8: dataset
