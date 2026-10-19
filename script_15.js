@@ -123,12 +123,8 @@ btnDelete.forEach(button => {
 
 let count = 1
 
-function addedNumberId() {
-	return count++
-}
-
 listTask.forEach(el => {
-	el.setAttribute('data-id', addedNumberId())
+	el.setAttribute('data-id', count++)
 	el.addEventListener('click', () => {
 		console.log(el.dataset.id)
 	})

@@ -8,6 +8,44 @@
 	</head>
 	<body>
 		<button data-js-btn>Нажми меня</button>
+
+		<div class="modal">
+			<form
+				class="modal-form"
+				id="feedbackForm"
+				action="/api/feedback"
+				method="POST"
+			>
+				<label for="phone">Телефон</label>
+				<input
+					type="tel"
+					name="phone"
+					id="phone"
+					placeholder="+7 (999) 123-45-67"
+					required
+				/>
+
+				<label for="email">Email</label>
+				<input
+					type="email"
+					name="email"
+					id="email"
+					placeholder="you@example.com"
+					required
+				/>
+
+				<label for="message">Сообщение</label>
+				<textarea
+					name="message"
+					id="message"
+					rows="4"
+					placeholder="Ваше сообщение"
+				></textarea>
+
+				<button class="modal-btn" type="submit">Отправить</button>
+			</form>
+		</div>
+		<button class='modal-open'>Открыть</button>
 		<script src="./script_15.js" type="module"></script>
 	</body>
 </html>

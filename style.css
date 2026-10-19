@@ -1,8 +1,32 @@
 body {
 	background: #b89b92;
+	position: relative;
 }
 
 .card {
 	transition: background 0.8s ease;
 }
 
+.modal {
+	max-width: 25rem;
+	max-height: 31.25rem;
+	border: 0.0625rem solid #1b1a1a;
+	border-radius: 10px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	/* opacity: 0;
+	visibility: hidden; */
+}
+
+.modal.active {
+	opacity: 1;
+	visibility: visible;
+}
+
+.modal-form {
+	padding: 1.875rem;
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+}
