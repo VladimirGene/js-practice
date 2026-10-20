@@ -1,32 +1,102 @@
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
 body {
-	background: #b89b92;
-	position: relative;
+	background: linear-gradient(135deg, #667eea, #764ba2);
+	display: flex;
+	flex-direction: column;
+	gap: 1.875rem;
+	align-items: center;
+	padding: 50px;
+}
+body.open-modal {
+	overflow: hidden;
 }
 
 .card {
-	transition: background 0.8s ease;
+	transition: all 0.8s ease;
+	opacity: 1;
+	visibility: visible;
+	transition: all 0.4s ease;
+}
+
+.card.hidden {
+	opacity: 0;
+	visibility: hidden;
 }
 
 .modal {
-	max-width: 25rem;
-	max-height: 31.25rem;
-	border: 0.0625rem solid #1b1a1a;
-	border-radius: 10px;
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	/* opacity: 0;
-	visibility: hidden; */
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	inset: 0;
+	background: #1d1c1c8e;
+	transition: all 0.3s ease;
+	pointer-events: none;
+	opacity: 0;
+	visibility: hidden;
 }
 
 .modal.active {
-	opacity: 1;
 	visibility: visible;
+	opacity: 1;
+	pointer-events: auto;
+}
+
+.modal.active .modal-content {
+	transform: scale(1);
+}
+
+.modal-content {
+	min-width: 25rem;
+	min-height: 18.75rem;
+	border: 0.0625rem solid #1b1a1a;
+	border-radius: 0.625rem;
+	background: #b7dd0dec;
+	box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.25);
+	transform: scale(0.85);
+	transition: all 0.4s ease;
+	animation: fadeIn 0.4s forwards;
 }
 
 .modal-form {
 	padding: 1.875rem;
 	display: flex;
 	flex-direction: column;
-	gap: 15px;
+	gap: 0.9375rem;
+}
+
+.close-btn {
+	position: absolute;
+	top: 0.875rem;
+	right: 1.125rem;
+	font-size: 1.875rem;
+	cursor: pointer;
+}
+
+.styled {
+	min-width: 12.5rem;
+	height: 3.125rem;
+	cursor: pointer;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: scale(0.85);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+.block {
+	height: 187.5rem;
 }

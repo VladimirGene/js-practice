@@ -7,45 +7,53 @@
 		<title>Document</title>
 	</head>
 	<body>
+		
+		
 		<button data-js-btn>Нажми меня</button>
 
-		<div class="modal">
-			<form
-				class="modal-form"
-				id="feedbackForm"
-				action="/api/feedback"
-				method="POST"
-			>
-				<label for="phone">Телефон</label>
-				<input
-					type="tel"
-					name="phone"
-					id="phone"
-					placeholder="+7 (999) 123-45-67"
-					required
-				/>
+		<div class="modal" data-js-modal>
+			<div class="modal-content" data-js-modal-content>
+				<span class="close-btn" data-js-close-modal>&times;</span>
+				<form
+					class="modal-form"
+					id="feedbackForm"
+					action="/api/feedback"
+					method="POST"
+				>
+					<label for="phone">Телефон</label>
+					<input
+						type="tel"
+						name="phone"
+						id="phone"
+						placeholder="+7 (999) 123-45-67"
+						required
+					/>
 
-				<label for="email">Email</label>
-				<input
-					type="email"
-					name="email"
-					id="email"
-					placeholder="you@example.com"
-					required
-				/>
+					<label for="email">Email</label>
+					<input
+						type="email"
+						name="email"
+						id="email"
+						placeholder="you@example.com"
+						required
+					/>
 
-				<label for="message">Сообщение</label>
-				<textarea
-					name="message"
-					id="message"
-					rows="4"
-					placeholder="Ваше сообщение"
-				></textarea>
+					<label for="message">Сообщение</label>
+					<textarea
+						name="message"
+						id="message"
+						rows="4"
+						placeholder="Ваше сообщение"
+					></textarea>
 
-				<button class="modal-btn" type="submit">Отправить</button>
-			</form>
+					<button class="modal-btn styled" type="submit">Отправить</button>
+				</form>
+			</div>
 		</div>
-		<button class='modal-open'>Открыть</button>
+		<button class="modal-btn styled" data-js-modal-btn>Открыть</button>
+
+		<div class="block" data-js-block></div>
+
 		<script src="./script_15.js" type="module"></script>
 	</body>
 </html>

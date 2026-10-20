@@ -93,7 +93,7 @@ const btn = document.querySelector('[data-js-btn]')
 btn.addEventListener('click', () => {
 	card.style.background = `hsl(${Math.random() * 360}, 70%, 50%)`
 })
-
+btn.classList.add('styled')
 /*
   ЗАДАЧА 7: Удаление элементов
   1. Добавь каждому li кнопку "Удалить" (создавай при добавлении)
@@ -102,7 +102,6 @@ btn.addEventListener('click', () => {
 
 const listTask = document.querySelectorAll('li')
 const addedBtn = `<button data-js-delete>Удалить</button>`
-
 listTask.forEach(el => {
 	el.insertAdjacentHTML('beforeend', addedBtn)
 })
@@ -135,7 +134,27 @@ listTask.forEach(el => {
   1. Реализуй модальное окно с помощью JS. Верстка должна быть в html. На js только управление видимостью.
   2. Как оно выглядит можно посмотреть в интернете, выбрать понравившуюся реализацию и постараться реализовать функционал открытия и закрытия модального окна. Без ИИ и без копипаста с интернета.
 */
-console.log(/* твой код */)
+
+const openModalBtn = document.querySelector('[data-js-modal-btn')
+const modal = document.querySelector('[data-js-modal]')
+const closeModalBtn = document.querySelector('[data-js-close-modal]')
+
+openModalBtn.addEventListener('click', () => {
+	modal.classList.add('active')
+	document.body.classList.add('open-modal')
+})
+
+function closeModal() {
+	if (modal.classList.contains('active')) {
+		modal.classList.remove('active')
+		document.body.classList.remove('open-modal')
+	}
+}
+
+closeModalBtn.addEventListener('click', closeModal)
+modal.addEventListener('click', e => {
+	if (e.target === modal) closeModal()
+})
 
 /*
   ЗАДАЧА 10: Прокрутка и координаты
@@ -143,7 +162,10 @@ console.log(/* твой код */)
   2. Повесь обработчик scroll на окно
   3. При прокрутке выводи количество пикселей, которые проскроллил пользователь
 */
-console.log(/* твой код */)
+
+window.addEventListener('scroll', () => {
+	console.log('Пикселей прокручено:', window.scrollY)
+})
 
 /*
   ЗАДАЧА 11: Работа с классами через classList
@@ -151,21 +173,15 @@ console.log(/* твой код */)
   2. При клике скрывай card (add hidden)
   3. При повторном клике — показывай (toggle hidden)
 */
-console.log(/* твой код */)
+const toggleBtn = document.createElement('button')
 
-/*
-  ЗАДАЧА 12: Финальное мини-приложение "Список дел". Реализовать через CLASS!
-  Создай UI:
-    - input
-    - button "Добавить"
-    - список ul > li
+toggleBtn.textContent = 'Скрыть'
+toggleBtn.classList.add('styled')
+card.after(toggleBtn)
+toggleBtn.addEventListener('click', () => {
+	const isHidden = card.classList.toggle('hidden')
+	toggleBtn.textContent = isHidden ? 'Показать' : 'Скрыть'
+})
 
-  Функционал:
-    1. Добавление задач
-    2. Удаление задач
-    3. Отмечать задачу выполненной (клик по li → добавляется класс "done")
-      
-  Требования:
-    1. Приятная адаптивная верстка (с дизайном. Дизайн на свое усмотрение)
-*/
-console.log(/* твой код */)
+
+
