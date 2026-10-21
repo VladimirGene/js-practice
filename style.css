@@ -16,6 +16,12 @@ body.open-modal {
 	overflow: hidden;
 }
 
+@media (max-width: 576px) {
+	body {
+		padding: 1.25rem;
+	}
+}
+
 .card {
 	transition: all 0.8s ease;
 	opacity: 1;
@@ -105,6 +111,12 @@ body.open-modal {
 	align-items: center;
 }
 
+@media (max-width: 576px) {
+	.block {
+		max-width: 15.625rem;
+	}
+}
+
 h1 {
 	font-size: 3rem;
 	color: rgb(51, 51, 51);
@@ -116,8 +128,15 @@ h1 {
 	width: 25rem;
 }
 
+@media (max-width: 576px) {
+	.input-group {
+		display: flex;
+		flex-direction: column;
+		max-width: 15.625rem;
+	}
+}
+
 .task-input {
-	width: 250px;
 	padding: 10px;
 	border-width: 1px;
 	border-style: solid;
@@ -149,16 +168,20 @@ h1 {
 	display: flex;
 	flex-direction: column;
 	gap: 0.625rem;
-	min-width: 25rem;
 }
 .todos {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
+	align-items: center;
+	gap: 0.3125rem;
 	list-style-type: none;
 	color: aliceblue;
 	font-size: 1.5rem;
-	min-width: 100%;
+	min-width: 15.625rem;
+	max-width: 25rem;
+	height: fit-content;
+	word-break: break-word;
 	background-color: rgba(53, 52, 52, 0.89);
 	padding: 0.625rem 1.25rem;
 	border-radius: 0.625rem;
@@ -175,4 +198,3 @@ h1 {
 	cursor: pointer;
 	z-index: 2;
 }
-
