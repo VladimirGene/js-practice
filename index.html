@@ -52,8 +52,22 @@
 		</div>
 		<button class="modal-btn styled" data-js-modal-btn>Открыть</button>
 
-		<div class="block" data-js-block></div>
+		<div class="block" data-js-block>
+			<h1>Список дел</h1>
+		<div class="input-group">
+			<input
+				class="task-input"
+				data-js-input
+				type="text"
+				placeholder="Новая задача"
+			/>
+			<button class="add-btn" data-js-add-task>Добавить</button>
+		</div>
+		<ul class="task-list" data-js-list>
+		</ul>
 
-		<script src="./script_15.js" type="module"></script>
+		</div>
+
+		<script src="./list_task.js" type="module"></script>
 	</body>
 </html>
