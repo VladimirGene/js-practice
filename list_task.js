@@ -14,17 +14,15 @@
      1. Приятная адаптивная верстка (с дизайном. Дизайн на свое усмотрение)
 */
 
-
-
-class TaskList {
+class ListTask {
 	constructor() {
 		this.input = document.querySelector('[data-js-input]')
-		this.button = document.querySelector('[data-js-add-task]')
+		this.button = document.querySelector('[data-js-btn-todo]')
 		this.list = document.querySelector('[data-js-list]')
-		this.todos = []
 		this.nextId = 1
+		this.todos = []
 		this.button.addEventListener('click', () => this.createTodo())
-		this.completeTodo()
+		this.completedTodo()
 		this.deleteTodo()
 	}
 
@@ -37,10 +35,24 @@ class TaskList {
 		this.renderTodo()
 	}
 
-	completeTodo() {
+	renderTodo() {
+		this.list.innerHTML = ''
+		for (const todo of this.todos) {
+			const todoHTML = `<li class="todos" data-id="${todo.id}" data-js-todo>
+    ${todo.text}
+    <button class="close-todo" >❌</button>
+    </li>`
+			this.list.insertAdjacentHTML('beforeend', todoHTML)
+			const liLast = this.list.lastElementChild
+			liLast.classList.toggle('done', todo.isCompleted)
+		}
+	}
+
+
+
+	completedTodo() {
 		this.list.addEventListener('click', event => {
-			if (event.target.closest('.close-todo')) return
-			const li = event.target.closest('li')
+			const li = event.target.closest('[data-js-todo]')
 			if (!li) return
 			const id = Number(li.dataset.id)
 			const todo = this.todos.find(item => item.id === id)
@@ -50,33 +62,19 @@ class TaskList {
 		})
 	}
 
+	
+
 	deleteTodo() {
 		this.list.addEventListener('click', event => {
 			const btn = event.target.closest('.close-todo')
+			const li = event.target.closest('[data-js-todo]')
 			if (!btn) return
-			const li = btn.closest('li')
-			if (!li) return
 			const id = Number(li.dataset.id)
 			this.todos = this.todos.filter(item => item.id !== id)
+
 			this.renderTodo()
 		})
 	}
-
-	renderTodo() {
-		this.list.innerHTML = ''
-		for (const todo of this.todos) {
-			const li = document.createElement('li')
-			const btn = document.createElement('button')
-			btn.classList.add('close-todo')
-			btn.textContent = '❌'
-			li.textContent = todo.text
-			li.dataset.id = todo.id
-			li.classList.toggle('done', todo.isCompleted)
-			li.classList.add('todos')
-			li.append(btn)
-			this.list.append(li)
-		}
-	}
 }
 
-new TaskList()
+new ListTask()
