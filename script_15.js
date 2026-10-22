@@ -135,7 +135,7 @@ listTask.forEach(el => {
   2. Как оно выглядит можно посмотреть в интернете, выбрать понравившуюся реализацию и постараться реализовать функционал открытия и закрытия модального окна. Без ИИ и без копипаста с интернета.
 */
 
-const openModalBtn = document.querySelector('[data-js-modal-btn')
+const openModalBtn = document.querySelector('[data-js-modal-btn]')
 const modal = document.querySelector('[data-js-modal]')
 const closeModalBtn = document.querySelector('[data-js-close-modal]')
 
@@ -182,6 +182,3 @@ toggleBtn.addEventListener('click', () => {
 	const isHidden = card.classList.toggle('hidden')
 	toggleBtn.textContent = isHidden ? 'Показать' : 'Скрыть'
 })
-
-
-

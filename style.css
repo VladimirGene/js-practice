@@ -178,7 +178,7 @@ h1 {
 	list-style-type: none;
 	color: aliceblue;
 	font-size: 1.5rem;
-	min-width: 15.625rem;
+	min-width: 25rem;
 	max-width: 25rem;
 	height: fit-content;
 	word-break: break-word;
@@ -187,13 +187,19 @@ h1 {
 	border-radius: 0.625rem;
 }
 
+@media (max-width: 576px) {
+	.todos {
+		max-width: 15.625rem;
+	}
+}
+
 .todos.done {
 	text-decoration: line-through;
 	background-color: rgba(161, 160, 160, 0.89);
 }
 
-.close-todo {
-	min-width: 4.75rem;
+.close-todo-btn {
+	min-width: 2.5rem;
 	height: 2rem;
 	cursor: pointer;
 	z-index: 2;
