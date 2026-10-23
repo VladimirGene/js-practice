@@ -26,16 +26,42 @@ class ListTask {
 
 	init() {
 		this.button.addEventListener('click', () => this.createTodo())
-		this.completedTodo()
-		this.deleteTodo()
+		this.list.addEventListener('click', event => this.handleListClick(event))
+	}
+
+	handleListClick(event) {
+		const li = event.target.closest('.js-todo')
+		if (!li) return
+
+		const deleteButton = event.target.closest('.js-close-btn')
+		const id = Number(li.dataset.id)
+
+		if (deleteButton) {
+			this.deleteTodo(id)
+			return
+		}
+		this.completedTodo(id)
 	}
 
 	createTodo() {
 		const text = this.input.value.trim()
-		if (text === '') return
+		if (!text) return
 		const todo = { id: this.nextId++, text: text, isCompleted: false }
 		this.todos.push(todo)
 		this.input.value = ''
+		this.renderTodo()
+	}
+
+	completedTodo(id) {
+		const todo = this.todos.find(item => item.id === id)
+		if (!todo) return
+
+		todo.isCompleted = !todo.isCompleted
+		this.renderTodo()
+	}
+
+	deleteTodo(id) {
+		this.todos = this.todos.filter(item => item.id !== id)
 		this.renderTodo()
 	}
 
@@ -43,42 +69,19 @@ class ListTask {
 		this.list.innerHTML = ''
 		for (const todo of this.todos) {
 			const li = document.createElement('li')
-			const btn = document.createElement('button')
 			li.classList.add('todos', 'js-todo')
-			btn.classList.add('close-todo-btn', 'js-close-btn')
 			li.classList.toggle('done', todo.isCompleted)
 			li.dataset.id = todo.id
-			btn.type = 'button'
 			li.textContent = todo.text
+
+			const btn = document.createElement('button')
+			btn.type = 'button'
+			btn.classList.add('close-todo-btn', 'js-close-btn')
 			btn.textContent = '❌'
-			this.list.append(li)
+
 			li.append(btn)
+			this.list.append(li)
 		}
-	}
-
-	completedTodo() {
-		this.list.addEventListener('click', event => {
-			const li = event.target.closest('.js-todo')
-			const btn = event.target.closest('.close-todo-btn')
-			if (!li) return
-			if (btn) return
-			const id = Number(li.dataset.id)
-			const todo = this.todos.find(item => item.id === id)
-			if (!todo) return
-			todo.isCompleted = !todo.isCompleted
-			this.renderTodo()
-		})
-	}
-
-	deleteTodo() {
-		this.list.addEventListener('click', event => {
-			const btn = event.target.closest('.close-todo-btn')
-			const li = event.target.closest('.js-todo')
-			if (!btn) return
-			const id = Number(li.dataset.id)
-			this.todos = this.todos.filter(item => item.id !== id)
-			this.renderTodo()
-		})
 	}
 }
 

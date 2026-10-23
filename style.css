@@ -4,14 +4,53 @@
 	padding: 0;
 }
 
+:root {
+	--bg: #f5f0e6;
+	--ink: #111111;
+	--paper: #ffffff;
+	--cream: #fffdf7;
+
+	--yellow: #ffd23f;
+	--red: #ff4d4d;
+	--green: #2ec4b6;
+	--blue: #4d7cff;
+	--pink: #ff7aa2;
+
+	--border: 3px solid var(--ink);
+	--border-thick: 4px solid var(--ink);
+	--shadow: 6px 6px 0 var(--ink);
+	--shadow-sm: 4px 4px 0 var(--ink);
+	--shadow-lg: 9px 9px 0 var(--ink);
+}
+
 body {
-	background: linear-gradient(135deg, #667eea, #764ba2);
+	background: var(--bg);
+	background-image:
+		repeating-linear-gradient(
+			0deg,
+			transparent,
+			transparent 31px,
+			rgba(17, 17, 17, 0.07) 31px,
+			rgba(17, 17, 17, 0.07) 32px
+		),
+		repeating-linear-gradient(
+			90deg,
+			transparent,
+			transparent 31px,
+			rgba(17, 17, 17, 0.07) 31px,
+			rgba(17, 17, 17, 0.07) 32px
+		);
 	display: flex;
 	flex-direction: column;
-	gap: 1.875rem;
+	gap: 2rem;
 	align-items: center;
 	padding: 50px;
+	min-height: 100vh;
+	font-family: 'Space Mono', 'IBM Plex Mono', 'Courier New', monospace;
+	color: var(--ink);
+	-webkit-font-smoothing: antialiased;
 }
+
 body.open-modal {
 	overflow: hidden;
 }
@@ -22,11 +61,11 @@ body.open-modal {
 	}
 }
 
+/* ---------- Карточки ---------- */
 .card {
-	transition: all 0.8s ease;
 	opacity: 1;
 	visibility: visible;
-	transition: all 0.4s ease;
+	transition: all 0.2s ease;
 }
 
 .card.hidden {
@@ -34,6 +73,7 @@ body.open-modal {
 	visibility: hidden;
 }
 
+/* ---------- Модальное окно ---------- */
 .modal {
 	display: flex;
 	justify-content: center;
@@ -42,11 +82,12 @@ body.open-modal {
 	height: 100%;
 	position: fixed;
 	inset: 0;
-	background: #1d1c1c8e;
-	transition: all 0.3s ease;
+	background: rgba(17, 17, 17, 0.6);
+	transition: all 0.2s ease;
 	pointer-events: none;
 	opacity: 0;
 	visibility: hidden;
+	z-index: 100;
 }
 
 .modal.active {
@@ -56,34 +97,81 @@ body.open-modal {
 }
 
 .modal.active .modal-content {
-	transform: scale(1);
+	transform: translate(-4px, -4px);
+	opacity: 1;
 }
 
 .modal-content {
+	position: relative;
 	min-width: 25rem;
 	min-height: 18.75rem;
-	border: 0.0625rem solid #1b1a1a;
-	border-radius: 0.625rem;
-	background: #b7dd0dec;
-	box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.25);
-	transform: scale(0.85);
-	transition: all 0.4s ease;
-	animation: fadeIn 0.4s forwards;
+	border: var(--border-thick);
+	background: var(--yellow);
+	box-shadow: var(--shadow-lg);
+	transform: translate(0, 0);
+	opacity: 0;
+	transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+	overflow: visible;
+}
+
+/* цветная «полоса-шапка» модалки */
+.modal-content::before {
+	content: '';
+	position: absolute;
+	top: -4px;
+	left: -4px;
+	right: -4px;
+	height: 10px;
+	background: repeating-linear-gradient(
+		90deg,
+		var(--red) 0 14px,
+		var(--blue) 14px 28px,
+		var(--green) 28px 42px,
+		var(--pink) 42px 56px
+	);
+	border: var(--border-thick);
+	border-bottom: none;
 }
 
 .modal-form {
-	padding: 1.875rem;
+	padding: 2.25rem 2rem 2rem;
 	display: flex;
 	flex-direction: column;
-	gap: 0.9375rem;
+	gap: 1.25rem;
 }
 
 .close-btn {
 	position: absolute;
-	top: 0.875rem;
-	right: 1.125rem;
-	font-size: 1.875rem;
+	top: -20px;
+	right: -20px;
+	font-size: 1.5rem;
+	line-height: 1;
 	cursor: pointer;
+	width: 3rem;
+	height: 3rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: var(--border);
+	border-radius: 0;
+	background: var(--red);
+	color: var(--paper);
+	font-weight: 900;
+	box-shadow: var(--shadow-sm);
+	transition: all 0.15s ease;
+	z-index: 3;
+}
+
+.close-btn:hover {
+	background: var(--ink);
+	color: var(--yellow);
+	transform: translate(-2px, -2px);
+	box-shadow: 6px 6px 0 var(--ink);
+}
+
+.close-btn:active {
+	transform: translate(2px, 2px);
+	box-shadow: 0 0 0 var(--ink);
 }
 
 .styled {
@@ -95,7 +183,7 @@ body.open-modal {
 @keyframes fadeIn {
 	from {
 		opacity: 0;
-		transform: scale(0.85);
+		transform: scale(0.9);
 	}
 	to {
 		opacity: 1;
@@ -103,11 +191,12 @@ body.open-modal {
 	}
 }
 
+/* ---------- Контент ---------- */
 .block {
 	height: 187.5rem;
 	display: flex;
 	flex-direction: column;
-	gap: 1.25rem;
+	gap: 1.75rem;
 	align-items: center;
 }
 
@@ -118,89 +207,228 @@ body.open-modal {
 }
 
 h1 {
+	display: inline-block;
 	font-size: 3rem;
-	color: rgb(51, 51, 51);
+	font-weight: 900;
+	letter-spacing: -0.03em;
+	text-transform: uppercase;
+	color: var(--ink);
+	background: var(--yellow);
+	padding: 0.4rem 1.25rem;
+	border: var(--border-thick);
+	box-shadow: var(--shadow);
+	transform: rotate(-2deg);
+	text-shadow: none;
 }
+
+/* ---------- Поле ввода ---------- */
 .input-group {
 	display: flex;
 	flex-direction: row;
-	gap: 1.25rem;
-	width: 25rem;
+	align-items: stretch;
+	gap: 0.75rem;
+	width: 27rem;
+	background: var(--cream);
+	border: var(--border-thick);
+	box-shadow: var(--shadow);
+	padding: 0.6rem;
+	transition:
+		transform 0.15s ease,
+		box-shadow 0.15s ease;
+}
+
+.input-group:focus-within {
+	transform: translate(-2px, -2px);
+	box-shadow: 8px 8px 0 var(--ink);
 }
 
 @media (max-width: 576px) {
 	.input-group {
 		display: flex;
 		flex-direction: column;
+		width: 100%;
 		max-width: 15.625rem;
 	}
 }
 
 .task-input {
-	padding: 10px;
-	border-width: 1px;
-	border-style: solid;
-	border-color: rgb(221, 221, 221);
-	border-image: none;
-	border-radius: 4px;
+	flex: 1;
+	min-width: 0;
+	padding: 12px 14px;
+	border: var(--border);
+	border-radius: 0;
 	outline: none;
+	background: var(--paper);
+	color: var(--ink);
+	font-size: 1rem;
+	font-family: inherit;
+	font-weight: 700;
+	transition:
+		background 0.15s ease,
+		box-shadow 0.15s ease;
 }
 
+.task-input::placeholder {
+	color: #9a9a9a;
+	font-weight: 400;
+	text-transform: uppercase;
+	font-size: 0.8rem;
+	letter-spacing: 0.08em;
+}
+
+.task-input:focus {
+	background: var(--yellow);
+	box-shadow: var(--shadow-sm);
+}
+
+/* ---------- Кнопка добавления ---------- */
 .add-btn {
-	background-color: rgb(40, 167, 69);
-	color: white;
+	background: var(--green);
+	color: var(--ink);
 	cursor: pointer;
-	padding: 10px 20px;
-	border-width: medium;
-	border-style: none;
-	border-color: currentcolor;
-	border-image: none;
-	border-radius: 4px;
-	transition: background 0.3s;
-	width: 100%;
+	padding: 12px 20px;
+	border: var(--border);
+	border-radius: 0;
+	font-weight: 900;
+	font-size: 0.95rem;
+	font-family: inherit;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	width: auto;
+	flex-shrink: 0;
+	white-space: nowrap;
+	box-shadow: var(--shadow-sm);
+	transition: all 0.15s ease;
 }
 
 .add-btn:hover {
-	background-color: rgb(33, 136, 56);
+	background: var(--yellow);
+	transform: translate(-2px, -2px);
+	box-shadow: 6px 6px 0 var(--ink);
 }
 
+.add-btn:active {
+	transform: translate(2px, 2px);
+	box-shadow: 0 0 0 var(--ink);
+}
+
+@media (max-width: 576px) {
+	.add-btn {
+		width: 100%;
+	}
+}
+
+/* ---------- Список задач ---------- */
 .task-list {
 	display: flex;
 	flex-direction: column;
-	gap: 0.625rem;
+	gap: 1rem;
 }
+
 .todos {
+	position: relative;
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
 	align-items: center;
-	gap: 0.3125rem;
+	gap: 0.75rem;
 	list-style-type: none;
-	color: aliceblue;
-	font-size: 1.5rem;
-	min-width: 25rem;
-	max-width: 25rem;
+	color: var(--ink);
+	font-size: 1.05rem;
+	font-weight: 700;
+	min-width: 27rem;
+	max-width: 27rem;
 	height: fit-content;
 	word-break: break-word;
-	background-color: rgba(53, 52, 52, 0.89);
-	padding: 0.625rem 1.25rem;
-	border-radius: 0.625rem;
+	background: var(--paper);
+	padding: 0.9rem 1rem 0.9rem 1.25rem;
+	border: var(--border-thick);
+	border-radius: 0;
+	box-shadow: var(--shadow);
+	transition: all 0.15s ease;
+}
+
+/* цветной «корешок» слева у каждой задачи */
+.todos::before {
+	content: '';
+	position: absolute;
+	top: -4px;
+	bottom: -4px;
+	left: -4px;
+	width: 8px;
+	background: var(--blue);
+	border: var(--border-thick);
+	border-right: none;
+}
+
+.todos:nth-child(4n + 1)::before {
+	background: var(--blue);
+}
+.todos:nth-child(4n + 2)::before {
+	background: var(--green);
+}
+.todos:nth-child(4n + 3)::before {
+	background: var(--pink);
+}
+.todos:nth-child(4n + 4)::before {
+	background: var(--yellow);
+}
+
+.todos:hover {
+	transform: translate(-3px, -3px);
+	box-shadow: 9px 9px 0 var(--ink);
 }
 
 @media (max-width: 576px) {
 	.todos {
+		min-width: 0;
 		max-width: 15.625rem;
+		font-size: 0.95rem;
 	}
 }
 
 .todos.done {
 	text-decoration: line-through;
-	background-color: rgba(161, 160, 160, 0.89);
+	text-decoration-thickness: 3px;
+	background: #e4e0d6;
+	color: #8a8a8a;
+	box-shadow: var(--shadow-sm);
 }
 
+.todos.done::before {
+	background: #b0b0b0;
+}
+
+.todos.done:hover {
+	transform: none;
+	box-shadow: var(--shadow-sm);
+}
+
+/* ---------- Кнопка удаления задачи ---------- */
 .close-todo-btn {
 	min-width: 2.5rem;
-	height: 2rem;
+	height: 2.5rem;
 	cursor: pointer;
 	z-index: 2;
+	border: var(--border);
+	border-radius: 0;
+	background: var(--paper);
+	color: var(--ink);
+	font-weight: 900;
+	font-size: 1rem;
+	font-family: inherit;
+	box-shadow: var(--shadow-sm);
+	transition: all 0.15s ease;
+}
+
+.close-todo-btn:hover {
+	background: var(--red);
+	color: var(--paper);
+	transform: translate(-1px, -1px);
+	box-shadow: 5px 5px 0 var(--ink);
+}
+
+.close-todo-btn:active {
+	transform: translate(1px, 1px);
+	box-shadow: 0 0 0 var(--ink);
 }
