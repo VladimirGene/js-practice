@@ -405,7 +405,7 @@ h1 {
 	box-shadow: var(--shadow-sm);
 }
 
-/* ---------- Кнопка удаления задачи ---------- */
+
 .close-todo-btn {
 	min-width: 2.5rem;
 	height: 2.5rem;
@@ -530,4 +530,148 @@ h1 {
 	border: 1px solid #d4c5a9;
 	border-radius: 6px;
 	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+
+.calculator {
+  width: 340px;
+  padding: 22px 20px 26px;
+  border-radius: 22px;
+  background: linear-gradient(145deg, #fbf6ec, #efe6d6);
+  box-shadow:
+    0 1px 0 #fff inset,
+    0 -2px 0 rgba(0, 0, 0, 0.06) inset,
+    0 18px 32px -12px rgba(90, 70, 40, 0.35),
+    0 6px 12px -6px rgba(90, 70, 40, 0.25);
+  position: relative;
+  border: 1px solid #e2d7c3;
+}
+
+
+
+.calculator__form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.calculator__row {
+  display: flex;
+  gap: 10px;
+}
+
+
+.calculator__display {
+  width: 100%;
+  height: 68px;
+  padding: 0 16px;
+  font-size: 30px;
+  font-weight: 600;
+  text-align: right;
+  color: #4a4033;
+  letter-spacing: 0.5px;
+  border-radius: 12px;
+  border: 1px solid #d8cbb5;
+  background:
+    linear-gradient(180deg, #fdfaf4 0%, #f3ecdf 100%);
+  box-shadow:
+    inset 0 2px 6px rgba(120, 100, 70, 0.18),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.9),
+    0 2px 0 rgba(255, 255, 255, 0.6);
+  outline: none;
+  font-family: "Courier New", monospace;
+}
+
+.calculator__display:focus {
+  border-color: #c9b894;
+  box-shadow:
+    inset 0 2px 6px rgba(120, 100, 70, 0.22),
+    0 0 0 3px rgba(200, 175, 130, 0.25);
+}
+
+
+.calculator__key {
+  flex: 1;
+  height: 56px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #5c5142;
+  cursor: pointer;
+  border: 1px solid #e0d4bd;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #ffffff 0%, #f5efe2 100%);
+  box-shadow:
+    0 3px 0 #d9ccb3,
+    0 5px 8px -3px rgba(90, 70, 40, 0.25),
+    inset 0 1px 0 #fff;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.15s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.calculator__key:hover {
+  background: linear-gradient(180deg, #ffffff 0%, #f9f4e9 100%);
+}
+
+
+.calculator__key:active {
+  transform: translateY(3px);
+  box-shadow:
+    0 0 0 #d9ccb3,
+    0 2px 4px -2px rgba(90, 70, 40, 0.3),
+    inset 0 2px 4px rgba(120, 100, 70, 0.18);
+}
+
+
+.js-btn-operation {
+  color: #7a5a35;
+  background: linear-gradient(180deg, #fdf3e0 0%, #f2e2c4 100%);
+  border-color: #e3d0ac;
+  box-shadow:
+    0 3px 0 #d5be94,
+    0 5px 8px -3px rgba(120, 90, 40, 0.28),
+    inset 0 1px 0 #fffaf0;
+}
+
+.js-btn-operation:hover {
+  background: linear-gradient(180deg, #fdf6e8 0%, #f6e8ce 100%);
+}
+
+.js-btn-operation:active {
+  box-shadow:
+    0 2px 4px -2px rgba(120, 90, 40, 0.3),
+    inset 0 2px 4px rgba(140, 105, 55, 0.2);
+}
+
+
+.js-btn-operation[data-value="="] {
+  color: #fff;
+  background: linear-gradient(180deg, #c9a86a 0%, #b08f52 100%);
+  border-color: #a5854c;
+  box-shadow:
+    0 3px 0 #8f7038,
+    0 5px 10px -3px rgba(120, 85, 30, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.js-btn-operation[data-value="="]:hover {
+  background: linear-gradient(180deg, #d2b276 0%, #b8975a 100%);
+}
+
+
+@media (max-width: 380px) {
+  .calculator {
+    width: 100%;
+    margin: 0 12px;
+  }
+
+  .calculator__key {
+    height: 50px;
+    font-size: 18px;
+  }
+
+  .calculator__display {
+    height: 60px;
+    font-size: 26px;
+  }
 }

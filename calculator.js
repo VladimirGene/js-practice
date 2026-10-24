@@ -1,4 +1,12 @@
 /*
+   ЗАДАЧА 8: Мини-проект "Калькулятор"
+   1. Реализуй верстку калькулятора с основными операциями (ИНТЕРФЕЙС ДОЛЖЕН БЫТЬ АДАПТИВНЫМ И КРАСИВЫМ. Подобие яндекс калькулятора). Сделать только основные операции (+, -, /, *, =, C), проценты и прочее не нужно.
+   После выполнения задачи, выслать на проверку и запросить следующие шаги по этой домашке.
+   ВАЖНО: 1 задача - 1 пулл реквест
+*/
+console.log(/* твой код */)
+
+/*
    ЗАДАЧА 8: Этапы реализации "Калькулятор"
   
    1. Разделить операции и цифры разными классами. 
@@ -104,3 +112,37 @@ currentValue = "0", previousValue = null, operator = null
 
 Критерий: 5 → / → 0 → =  сообщение об ошибке, после C снова обычный режим.
 */
+
+class Calculator {
+	constructor() {
+		this.init()
+	}
+
+	init() {
+		document.addEventListener('click', event => this.clickOnButton(event))
+	}
+
+	clickOnButton(event) {
+		const digit = event.target.closest('.js-btn-digit')
+		const operation = event.target.closest('.js-btn-operation')
+
+		if (digit) {
+			event.preventDefault()
+			this.clickOnDigit(digit)
+		}
+		if (operation) {
+			event.preventDefault()
+			this.clickOnOperation(operation)
+		}
+	}
+
+	clickOnDigit(digit) {
+		console.log(parseInt(digit.dataset.value))
+	}
+
+	clickOnOperation(operation) {
+		console.log(operation.dataset.value)
+	}
+}
+
+new Calculator()
