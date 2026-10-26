@@ -115,14 +115,53 @@ currentValue = "0", previousValue = null, operator = null
 
 class Calculator {
 	constructor() {
+		this.display = document.querySelector('.js-calculator__display')
+		this.operator = document.querySelectorAll('.js-btn-operation')
+		this.currentValue = '0'
+		this.previousValue = null
 		this.init()
 	}
 
 	init() {
-		document.addEventListener('click', event => this.clickOnButton(event))
+		document.addEventListener('click', event => this.bindEvents(event))
+		document.addEventListener('keydown', event => this.backspace(event))
+
+		this.updateDisplay()
 	}
 
-	clickOnButton(event) {
+	updateDisplay() {
+		this.display.value = this.currentValue
+	}
+
+	inputDigit(digit) {
+		const newDigit = String(digit)
+		if (this.currentValue === '0') {
+			this.currentValue = newDigit
+		} else {
+			if (this.currentValue.length < 12) {
+				this.currentValue += newDigit
+			}
+		}
+	}
+
+	clear() {
+		this.currentValue = '0'
+		this.previousValue = null
+		this.updateDisplay()
+	}
+
+	backspace(event) {
+		if (event.key === 'Backspace') {
+			event.preventDefault()
+			this.currentValue = this.currentValue.slice(0, -1)
+			if (this.currentValue.length === 0) {
+				this.currentValue = '0'
+			}
+			this.updateDisplay()
+		}
+	}
+
+	bindEvents(event) {
 		const digit = event.target.closest('.js-btn-digit')
 		const operation = event.target.closest('.js-btn-operation')
 
@@ -133,15 +172,29 @@ class Calculator {
 		if (operation) {
 			event.preventDefault()
 			this.clickOnOperation(operation)
+			this.setOperator(operation)
+			if (operation.dataset.value === 'C') {
+				this.clear()
+			}
 		}
 	}
 
 	clickOnDigit(digit) {
-		console.log(parseInt(digit.dataset.value))
+		this.inputDigit(digit.dataset.value)
+		this.updateDisplay()
 	}
 
 	clickOnOperation(operation) {
 		console.log(operation.dataset.value)
+	}
+
+	setOperator(op) {
+		if (['+', '-', '*', '/'].includes(op.dataset.value)) {
+			this.previousValue = this.currentValue
+			this.currentValue = '0'
+			this.operator = op.dataset.value
+			this.updateDisplay()
+		}
 	}
 }
 
