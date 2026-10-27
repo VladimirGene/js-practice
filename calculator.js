@@ -116,9 +116,11 @@ currentValue = "0", previousValue = null, operator = null
 class Calculator {
 	constructor() {
 		this.display = document.querySelector('.js-calculator__display')
-		this.operator = document.querySelectorAll('.js-btn-operation')
+
 		this.currentValue = '0'
+		this.currentOperator = null
 		this.previousValue = null
+
 		this.init()
 	}
 
@@ -135,18 +137,23 @@ class Calculator {
 
 	inputDigit(digit) {
 		const newDigit = String(digit)
+
 		if (this.currentValue === '0') {
 			this.currentValue = newDigit
-		} else {
-			if (this.currentValue.length < 12) {
-				this.currentValue += newDigit
-			}
+			return this.currentValue
 		}
+
+		if (this.currentValue.length < 12) {
+			this.currentValue += newDigit
+		}
+
+		return this.currentValue
 	}
 
 	clear() {
 		this.currentValue = '0'
 		this.previousValue = null
+		this.currentOperator = null
 		this.updateDisplay()
 	}
 
@@ -168,13 +175,20 @@ class Calculator {
 		if (digit) {
 			event.preventDefault()
 			this.clickOnDigit(digit)
+			this.display.focus()
 		}
+
 		if (operation) {
 			event.preventDefault()
 			this.clickOnOperation(operation)
 			this.setOperator(operation)
+			this.display.focus()
+
 			if (operation.dataset.value === 'C') {
 				this.clear()
+			}
+			if (operation.dataset.value === '=') {
+				this.calculate()
 			}
 		}
 	}
@@ -185,16 +199,42 @@ class Calculator {
 	}
 
 	clickOnOperation(operation) {
-		console.log(operation.dataset.value)
+		// console.log(operation.dataset.value)
 	}
 
 	setOperator(op) {
 		if (['+', '-', '*', '/'].includes(op.dataset.value)) {
 			this.previousValue = this.currentValue
+			this.currentOperator = op.dataset.value
 			this.currentValue = '0'
-			this.operator = op.dataset.value
 			this.updateDisplay()
 		}
+	}
+
+	calculate() {
+		if (!this.currentOperator || this.previousValue === null) return
+		let result = 0
+		const prev = parseFloat(this.previousValue)
+		const curr = parseFloat(this.currentValue)
+
+		switch (this.currentOperator) {
+			case '+':
+				result = prev + curr
+				break
+			case '-':
+				result = prev - curr
+				break
+			case '/':
+				result = curr === 0 ? 'Error' : prev / curr
+				break
+			case '*':
+				result = prev * curr
+				break
+		}
+		this.currentValue = String(result)
+		this.previousValue = null
+		this.currentOperator = null
+		this.updateDisplay()
 	}
 }
 

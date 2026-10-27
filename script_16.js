@@ -109,12 +109,10 @@ document.addEventListener('keydown', event => {
 */
 const square = document.querySelector('.js-paper-square')
 
-let x = parseInt(square.style.left) || 0
-let y = parseInt(square.style.top) || 0
+let x = 0
+let y = 0
 
 document.addEventListener('keydown', event => {
-	event.preventDefault()
-
 	switch (event.code) {
 		case 'ArrowUp':
 			y -= 10
@@ -128,10 +126,8 @@ document.addEventListener('keydown', event => {
 		case 'ArrowRight':
 			x += 10
 			break
-		default:
-			return
 	}
 
-	square.style.left = x + 'px'
-	square.style.top = y + 'px'
+	event.preventDefault()
+	square.style.transform = `translate(${x}px, ${y}px)`
 })
