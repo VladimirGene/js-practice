@@ -180,7 +180,6 @@ class Calculator {
 
 		if (operation) {
 			event.preventDefault()
-			this.clickOnOperation(operation)
 			this.setOperator(operation)
 			this.display.focus()
 
@@ -196,10 +195,6 @@ class Calculator {
 	clickOnDigit(digit) {
 		this.inputDigit(digit.dataset.value)
 		this.updateDisplay()
-	}
-
-	clickOnOperation(operation) {
-		// console.log(operation.dataset.value)
 	}
 
 	setOperator(op) {
