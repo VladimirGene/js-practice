@@ -116,18 +116,16 @@ currentValue = "0", previousValue = null, operator = null
 class Calculator {
 	constructor() {
 		this.display = document.querySelector('.js-calculator__display')
-
 		this.currentValue = '0'
+		this.previousValue = '0'
 		this.currentOperator = null
-		this.previousValue = null
-
+		this.isOperatorSelected = false
 		this.init()
 	}
 
 	init() {
 		document.addEventListener('click', event => this.bindEvents(event))
 		document.addEventListener('keydown', event => this.backspace(event))
-
 		this.updateDisplay()
 	}
 
@@ -138,22 +136,28 @@ class Calculator {
 	inputDigit(digit) {
 		const newDigit = String(digit)
 
+		if (this.isOperatorSelected) {
+			this.currentValue = newDigit
+			this.isOperatorSelected = false
+			return this.currentValue
+		}
+
 		if (this.currentValue === '0') {
 			this.currentValue = newDigit
-			return this.currentValue
+			return
 		}
 
 		if (this.currentValue.length < 12) {
 			this.currentValue += newDigit
 		}
-
 		return this.currentValue
 	}
 
 	clear() {
 		this.currentValue = '0'
-		this.previousValue = null
+		this.previousValue = '0'
 		this.currentOperator = null
+		this.isOperatorSelected = false
 		this.updateDisplay()
 	}
 
@@ -171,24 +175,29 @@ class Calculator {
 	bindEvents(event) {
 		const digit = event.target.closest('.js-btn-digit')
 		const operation = event.target.closest('.js-btn-operation')
+		event.preventDefault()
 
 		if (digit) {
-			event.preventDefault()
 			this.clickOnDigit(digit)
 			this.display.focus()
+			return
 		}
 
 		if (operation) {
-			event.preventDefault()
-			this.setOperator(operation)
-			this.display.focus()
+			const value = operation.dataset.value
+			const mathOperators = ['+', '-', '*', '/']
 
-			if (operation.dataset.value === 'C') {
-				this.clear()
+			if (mathOperators.includes(value)) {
+				this.setOperator(value)
 			}
-			if (operation.dataset.value === '=') {
+			if (value === '=') {
 				this.calculate()
 			}
+			if (value === 'C') {
+				this.clear()
+			}
+
+			this.display.focus()
 		}
 	}
 
@@ -198,19 +207,23 @@ class Calculator {
 	}
 
 	setOperator(op) {
-		if (['+', '-', '*', '/'].includes(op.dataset.value)) {
+		if (!this.isOperatorSelected) {
 			this.previousValue = this.currentValue
-			this.currentOperator = op.dataset.value
+			this.currentOperator = op
 			this.currentValue = '0'
-			this.updateDisplay()
+			this.isOperatorSelected = true
+			return
 		}
+		this.currentOperator = op
+		this.updateDisplay()
 	}
 
 	calculate() {
-		if (!this.currentOperator || this.previousValue === null) return
-		let result = 0
+		if (!this.currentOperator || this.isOperatorSelected) return
+
 		const prev = parseFloat(this.previousValue)
 		const curr = parseFloat(this.currentValue)
+		let result = 0
 
 		switch (this.currentOperator) {
 			case '+':
@@ -219,16 +232,18 @@ class Calculator {
 			case '-':
 				result = prev - curr
 				break
-			case '/':
-				result = curr === 0 ? 'Error' : prev / curr
-				break
 			case '*':
 				result = prev * curr
 				break
+			case '/':
+				result = curr === 0 ? 'Error' : prev / curr
+				break
 		}
+
 		this.currentValue = String(result)
-		this.previousValue = null
+		this.previousValue = '0'
 		this.currentOperator = null
+		this.isOperatorSelected = false
 		this.updateDisplay()
 	}
 }
