@@ -113,12 +113,14 @@ currentValue = "0", previousValue = null, operator = null
 Критерий: 5 → / → 0 → =  сообщение об ошибке, после C снова обычный режим.
 */
 
+
+
 class Calculator {
 	constructor() {
 		this.display = document.querySelector('.js-calculator__display')
 		this.currentValue = '0'
 		this.previousValue = '0'
-		this.currentOperator = null
+		this.operator = null
 		this.isOperatorSelected = false
 		this.init()
 	}
@@ -128,9 +130,29 @@ class Calculator {
 		document.addEventListener('keydown', event => this.backspace(event))
 		this.updateDisplay()
 	}
-
 	updateDisplay() {
 		this.display.value = this.currentValue
+	}
+
+	clear() {
+		this.currentValue = '0'
+		this.previousValue = '0'
+		this.operator = null
+		this.isOperatorSelected = false
+		this.display.focus()
+		this.updateDisplay()
+	}
+
+	backspace(event) {
+		if (event.key === 'Backspace') {
+			event.preventDefault()
+			this.currentValue = this.currentValue.slice(0, -1)
+		}
+
+		if (this.currentValue.length === 0) {
+			this.currentValue = '0'
+		}
+		this.updateDisplay()
 	}
 
 	inputDigit(digit) {
@@ -139,37 +161,16 @@ class Calculator {
 		if (this.isOperatorSelected) {
 			this.currentValue = newDigit
 			this.isOperatorSelected = false
-			return this.currentValue
+			return
 		}
-
 		if (this.currentValue === '0') {
 			this.currentValue = newDigit
 			return
 		}
-
 		if (this.currentValue.length < 12) {
 			this.currentValue += newDigit
 		}
 		return this.currentValue
-	}
-
-	clear() {
-		this.currentValue = '0'
-		this.previousValue = '0'
-		this.currentOperator = null
-		this.isOperatorSelected = false
-		this.updateDisplay()
-	}
-
-	backspace(event) {
-		if (event.key === 'Backspace') {
-			event.preventDefault()
-			this.currentValue = this.currentValue.slice(0, -1)
-			if (this.currentValue.length === 0) {
-				this.currentValue = '0'
-			}
-			this.updateDisplay()
-		}
 	}
 
 	bindEvents(event) {
@@ -184,19 +185,18 @@ class Calculator {
 		}
 
 		if (operation) {
+			const mathOperators = ['+', '-', '/', '*']
 			const value = operation.dataset.value
-			const mathOperators = ['+', '-', '*', '/']
 
 			if (mathOperators.includes(value)) {
 				this.setOperator(value)
 			}
-			if (value === '=') {
-				this.calculate()
-			}
 			if (value === 'C') {
 				this.clear()
 			}
-
+			if (value === '=') {
+				this.calculate()
+			}
 			this.display.focus()
 		}
 	}
@@ -209,23 +209,22 @@ class Calculator {
 	setOperator(op) {
 		if (!this.isOperatorSelected) {
 			this.previousValue = this.currentValue
-			this.currentOperator = op
-			this.currentValue = '0'
+			this.operator = op
 			this.isOperatorSelected = true
 			return
 		}
-		this.currentOperator = op
+		this.operator = op
 		this.updateDisplay()
 	}
 
 	calculate() {
-		if (!this.currentOperator || this.isOperatorSelected) return
+		if (!this.operator || this.isOperatorSelected) return
 
 		const prev = parseFloat(this.previousValue)
 		const curr = parseFloat(this.currentValue)
 		let result = 0
 
-		switch (this.currentOperator) {
+		switch (this.operator) {
 			case '+':
 				result = prev + curr
 				break
@@ -236,13 +235,12 @@ class Calculator {
 				result = prev * curr
 				break
 			case '/':
-				result = curr === 0 ? 'Error' : prev / curr
+				result = curr === 0 ? 'Ошибка' : prev / curr
 				break
 		}
-
 		this.currentValue = String(result)
 		this.previousValue = '0'
-		this.currentOperator = null
+		this.operator = null
 		this.isOperatorSelected = false
 		this.updateDisplay()
 	}
