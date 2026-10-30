@@ -108,29 +108,26 @@ document.addEventListener('keydown', event => {
    2. На стрелки ↑ ↓ ← → двигая квадрат на 10px
 */
 const square = document.querySelector('.js-paper-square')
+
+let x = 0
+let y = 0
+
 document.addEventListener('keydown', event => {
-	if (event.code === 'ArrowUp') {
-		event.preventDefault()
-		let arrowTop = parseInt(square.style.top) || 0
-		arrowTop -= 10
-		square.style.top = arrowTop + 'px'
+	switch (event.code) {
+		case 'ArrowUp':
+			y -= 10
+			break
+		case 'ArrowDown':
+			y += 10
+			break
+		case 'ArrowLeft':
+			x -= 10
+			break
+		case 'ArrowRight':
+			x += 10
+			break
 	}
-	if (event.code === 'ArrowDown') {
-		event.preventDefault()
-		let arrowBottom = parseInt(square.style.top) || 0
-		arrowBottom += 10
-		square.style.top = arrowBottom + 'px'
-	}
-	if (event.code === 'ArrowLeft') {
-		event.preventDefault()
-		let arrowLeft = parseInt(square.style.left) || 0
-		arrowLeft -= 10
-		square.style.left = arrowLeft + 'px'
-	}
-	if (event.code === 'ArrowRight') {
-		event.preventDefault()
-		let arrowRight = parseInt(square.style.left) || 0
-		arrowRight += 10
-		square.style.left = arrowRight + 'px'
-	}
+
+	event.preventDefault()
+	square.style.transform = `translate(${x}px, ${y}px)`
 })

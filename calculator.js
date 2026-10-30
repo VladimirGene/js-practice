@@ -115,33 +115,140 @@ currentValue = "0", previousValue = null, operator = null
 
 class Calculator {
 	constructor() {
+		this.display = document.querySelector('.js-calculator__display')
+		this.currentValue = '0'
+		this.previousValue = '0'
+		this.operator = null
+		this.isOperatorSelected = false
 		this.init()
 	}
 
 	init() {
-		document.addEventListener('click', event => this.clickOnButton(event))
+		document.addEventListener('click', event => this.bindEvents(event))
+		document.addEventListener('keydown', event => this.backspace(event))
+		this.updateDisplay()
+	}
+	updateDisplay() {
+		this.display.value = this.currentValue
 	}
 
-	clickOnButton(event) {
+	clear() {
+		this.currentValue = '0'
+		this.previousValue = '0'
+		this.operator = null
+		this.isOperatorSelected = false
+		this.display.focus()
+		this.updateDisplay()
+	}
+
+	backspace(event) {
+		event.preventDefault()
+		if (event.key === 'Backspace') {
+			this.currentValue = this.currentValue.slice(0, -1)
+		}
+
+		if (this.currentValue.length === 0) {
+			this.currentValue = '0'
+		}
+		this.updateDisplay()
+	}
+
+	inputDigit(digit) {
+		const newDigit = String(digit)
+
+		if (this.isOperatorSelected) {
+			this.currentValue = newDigit
+			this.isOperatorSelected = false
+			return
+		}
+		if (this.currentValue === '0') {
+			this.currentValue = newDigit
+			return
+		}
+		if (this.currentValue.length < 12) {
+			this.currentValue += newDigit
+		}
+		return this.currentValue
+	}
+
+	bindEvents(event) {
+		event.preventDefault()
 		const digit = event.target.closest('.js-btn-digit')
 		const operation = event.target.closest('.js-btn-operation')
 
 		if (digit) {
-			event.preventDefault()
 			this.clickOnDigit(digit)
+			this.display.focus()
+			return
 		}
+
 		if (operation) {
-			event.preventDefault()
-			this.clickOnOperation(operation)
+			const mathOperators = ['+', '-', '/', '*']
+			const value = operation.dataset.value
+
+			if (mathOperators.includes(value)) {
+				this.setOperator(value)
+			}
+			if (value === 'C') {
+				this.clear()
+			}
+			if (value === '=') {
+				this.calculate()
+			}
+			this.display.focus()
 		}
 	}
 
 	clickOnDigit(digit) {
-		console.log(parseInt(digit.dataset.value))
+		this.inputDigit(digit.dataset.value)
+		this.updateDisplay()
 	}
 
-	clickOnOperation(operation) {
-		console.log(operation.dataset.value)
+	setOperator(op) {
+		if (!this.isOperatorSelected) {
+			this.operator = op
+			this.previousValue = this.currentValue
+			this.isOperatorSelected = true
+			this.currentValue = this.previousValue + op
+			this.updateDisplay()
+			return
+		}
+		if (this.isOperatorSelected) {
+			this.operator = op
+			this.currentValue = this.previousValue + op
+			this.updateDisplay()
+			return
+		}
+		this.operator = op
+		this.updateDisplay()
+	}
+
+	calculate() {
+		if (!this.operator || this.isOperatorSelected) return
+
+		const prev = parseFloat(this.previousValue)
+		const curr = parseFloat(this.currentValue)
+		let result = 0
+
+		switch (this.operator) {
+			case '+':
+				result = prev + curr
+				break
+			case '-':
+				result = prev - curr
+				break
+			case '*':
+				result = prev * curr
+				break
+			case '/':
+				result = curr === 0 ? 'Ошибка' : prev / curr
+				break
+		}
+		this.currentValue = String(Math.round(result * 1e10) / 1e10)
+		this.previousValue = '0'
+		this.operator = null
+		this.isOperatorSelected = false
+		this.updateDisplay()
 	}
 }
 
