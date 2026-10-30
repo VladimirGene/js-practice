@@ -89,7 +89,7 @@ constructor() {
 
 
 		calculate() {
-защита от того если нет оператора или флаг в true то есть второе число еще не введено 
+<!-- защита от того если нет оператора или флаг в true то есть второе число еще не введено  -->
 		if (!this.operator || this.isOperatorSelected) return 
 
 		const prev = parseFloat(this.previousValue)

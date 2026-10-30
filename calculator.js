@@ -113,8 +113,6 @@ currentValue = "0", previousValue = null, operator = null
 Критерий: 5 → / → 0 → =  сообщение об ошибке, после C снова обычный режим.
 */
 
-
-
 class Calculator {
 	constructor() {
 		this.display = document.querySelector('.js-calculator__display')
@@ -144,8 +142,8 @@ class Calculator {
 	}
 
 	backspace(event) {
+		event.preventDefault()
 		if (event.key === 'Backspace') {
-			event.preventDefault()
 			this.currentValue = this.currentValue.slice(0, -1)
 		}
 
@@ -174,9 +172,9 @@ class Calculator {
 	}
 
 	bindEvents(event) {
+		event.preventDefault()
 		const digit = event.target.closest('.js-btn-digit')
 		const operation = event.target.closest('.js-btn-operation')
-		event.preventDefault()
 
 		if (digit) {
 			this.clickOnDigit(digit)
@@ -208,9 +206,17 @@ class Calculator {
 
 	setOperator(op) {
 		if (!this.isOperatorSelected) {
-			this.previousValue = this.currentValue
 			this.operator = op
+			this.previousValue = this.currentValue
 			this.isOperatorSelected = true
+			this.currentValue = this.previousValue + op
+			this.updateDisplay()
+			return
+		}
+		if (this.isOperatorSelected) {
+			this.operator = op
+			this.currentValue = this.previousValue + op
+			this.updateDisplay()
 			return
 		}
 		this.operator = op
@@ -238,7 +244,7 @@ class Calculator {
 				result = curr === 0 ? 'Ошибка' : prev / curr
 				break
 		}
-		this.currentValue = String(result)
+		this.currentValue = String(Math.round(result * 1e10) / 1e10)
 		this.previousValue = '0'
 		this.operator = null
 		this.isOperatorSelected = false
