@@ -112,3 +112,16 @@ currentValue = "0", previousValue = null, operator = null
 
 Критерий: 5 → / → 0 → =  сообщение об ошибке, после C снова обычный режим.
 */
+
+
+function order(words) {
+	const wordsSplit = words.split(' ')
+	const result = []
+	console.log(wordsSplit[1].includes('1'))
+	result.push(wordsSplit[1])
+	return result
+}
+console.log(order('is2 Thi1s T4est 3a'));
+
+
+order('is2 Thi1s T4est 3a')
