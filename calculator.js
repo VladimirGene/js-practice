@@ -7,12 +7,9 @@ class Calculator {
 	}
 
 	constructor() {
-		this.display = document.querySelector('.js-calculator__display')
-		this.displayValue = '0'
-		this.currentValue = ''
-		this.previousValue = ''
-		this.operator = null
+		this.display = document.querySelector('.js-calculator-display')
 		this.error = 'Ошибка'
+		this.reset()
 		this.init()
 	}
 
@@ -22,7 +19,18 @@ class Calculator {
 	}
 
 	updateDisplay() {
+		if (this.operator !== null) {
+			this.displayValue = this.previousValue + this.operator + this.currentValue
+		}
 		this.display.value = this.displayValue
+	}
+
+	reset(displayValue = '0') {
+		this.displayValue = displayValue
+		this.currentValue = ''
+		this.previousValue = ''
+		this.operator = null
+		this.updateDisplay()
 	}
 
 	bindEvents(event) {
@@ -34,6 +42,7 @@ class Calculator {
 			const digitValue = digit.dataset.value
 			this.inputDigit(digitValue)
 			this.display.focus()
+			return
 		}
 		if (!operation) return
 
@@ -43,22 +52,15 @@ class Calculator {
 			event.preventDefault()
 			this.setOperator(operationValue)
 			this.display.focus()
+			return
 		}
-		if (operationValue === 'C') {
-			this.clear()
-		}
-		if (operationValue === '=') {
-			this.calculate()
-		}
+		if (operationValue === 'C') return this.clear()
+		if (operationValue === '=') return this.calculate()
 	}
 
 	clear() {
-		this.displayValue = '0'
-		this.currentValue = ''
-		this.previousValue = ''
-		this.operator = null
+		this.reset()
 		this.display.focus()
-		this.updateDisplay()
 	}
 
 	backspace(event) {
@@ -68,91 +70,60 @@ class Calculator {
 
 		if (this.operator !== null && this.currentValue !== '') {
 			this.currentValue = this.currentValue.slice(0, -1)
-			this.displayValue = this.previousValue + this.operator + this.currentValue
-
-			if (this.currentValue === '') {
-				this.displayValue = this.previousValue + this.operator
-				this.updateDisplay()
-				return
-			}
-
-			this.updateDisplay()
-			return
+			return this.updateDisplay()
 		}
 
-		if (this.operator !== null && this.currentValue === '') {
+		if (this.operator !== null) {
 			this.operator = null
 			this.previousValue = ''
-			this.displayValue = this.displayValue.slice(0, -1)
-			if (this.displayValue.length === 0) {
-				this.displayValue = '0'
-			}
-			this.updateDisplay()
-			return
+			this.displayValue = this.displayValue.slice(0, -1) || '0'
+			return this.updateDisplay()
 		}
 
-		this.displayValue = this.displayValue.slice(0, -1)
-		if (this.displayValue.length === 0) {
-			this.displayValue = '0'
-		}
+		this.displayValue = this.displayValue.slice(0, -1) || '0'
 		this.updateDisplay()
 	}
 
 	inputDigit(digit) {
-		if (this.displayValue === this.error) {
-			this.displayValue = '0'
-			this.operator = null
-			this.previousValue = ''
-			this.currentValue = ''
-		}
+		if (this.displayValue === this.error) this.reset()
 
 		if (this.displayValue === '0') {
 			this.displayValue = digit
-			this.updateDisplay()
-			return
+			return this.updateDisplay()
 		}
 
 		if (this.operator === null) {
-			if (this.displayValue.length > 12) {
-				return
-			}
+			if (this.displayValue.length > 12) return
 			this.displayValue += digit
-			this.updateDisplay()
-			return
+			return this.updateDisplay()
 		}
+
 		if (this.currentValue === '0') {
 			this.currentValue = digit
-			this.displayValue = this.previousValue + this.operator + this.currentValue
-			this.updateDisplay()
-			return
+			return this.updateDisplay()
 		}
 
-		if (this.currentValue.length > 12) {
-			return
-		}
-
+		if (this.currentValue.length > 12) return
 		this.currentValue += digit
-		this.displayValue = this.previousValue + this.operator + this.currentValue
 		this.updateDisplay()
 	}
 
 	setOperator(op) {
-		if (this.displayValue === this.error) return
-		if (this.displayValue === '0' && this.operator === null) return
-		if (this.operator !== null && this.currentValue !== '') return
-
-		if (this.operator !== null) {
-			this.operator = op
-			this.currentValue = ''
-			this.displayValue = this.previousValue + op
-			this.updateDisplay()
+		if (
+			this.displayValue === this.error ||
+			(this.displayValue === '0' && this.operator === null) ||
+			(this.operator !== null && this.currentValue !== '')
+		)
 			return
-		}
-		this.previousValue = this.displayValue
+
+		if (this.operator === null) this.previousValue = this.displayValue
 		this.operator = op
 		this.currentValue = ''
-		this.displayValue = this.previousValue + op
 		this.updateDisplay()
+	}
+
+	setError() {
+		this.reset(this.error)
 	}
 
 	calculate() {
@@ -167,21 +138,16 @@ class Calculator {
 		const prev = parseFloat(this.previousValue)
 		const curr = parseFloat(this.currentValue)
 
-		if (this.operator === '/' && curr === 0) {
-			this.displayValue = this.error
-			this.operator = null
-			this.previousValue = ''
-			this.currentValue = ''
-			this.updateDisplay()
-			return
-		}
+		if (this.operator === '/' && curr === 0) return this.setError()
 
 		const result = Calculator.OPERATIONS[this.operator](prev, curr)
-		this.displayValue = String(result)
+		if (!Number.isFinite(result)) return this.setError()
 
+		const clean = String(Number(result.toFixed(10)))
+		this.displayValue = clean
+		this.previousValue = clean
 		this.operator = null
 		this.currentValue = ''
-		this.previousValue = String(result)
 		this.updateDisplay()
 	}
 }
