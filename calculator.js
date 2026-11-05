@@ -47,6 +47,8 @@ class Calculator {
 
 	// Удаление выражение на дисплее по симфольно
 	backspace(event) {
+
+		
 		// Если нажата любая другая кнопка прекращаем выполение метода
 		if (event.key !== 'Backspace') return
 		event.preventDefault()
@@ -59,7 +61,8 @@ class Calculator {
 		}
 		// Если оператор есть вызвывыем метода обнуления оператора(null) и очистка второго числа('') и методом слайс удалем с конца символы и обновляем дисплей
 		if (this.operator !== null) {
-			this.resetOperetorAndCurrentValue()
+			this.operator = null
+			this.currentValue = ''
 			this.displayValue = this.displayValue.slice(0, -1) || '0'
 			return this.updateDisplay()
 		}
@@ -151,12 +154,6 @@ class Calculator {
 		this.reset(this.error)
 	}
 
-	// Обнуление оператора и второго числа
-	resetOperetorAndCurrentValue() {
-		this.operator = null
-		this.currentValue = ''
-	}
-
 	// Метод подсчета
 	calculate() {
 		// Вычисление невозможно: нет первого числа, второго числа или корректного оператора — выходим
@@ -178,13 +175,8 @@ class Calculator {
 		if (!Number.isFinite(result)) return this.setError()
 		// Округляем до 10 знаков после запятой, убираем хвостовые нули и приводим к строке
 		const clean = String(Number(result.toFixed(10)))
-		// Выводим результат на дисплей
-		this.displayValue = clean
-		// Результат становится первым числом для дальнейших вычислений
-		this.previousValue = clean
-		// Обнуление оператора и второго числа
-		this.resetOperetorAndCurrentValue()
-		this.updateDisplay()
+		this.reset(clean)
+		this.display.focus()
 	}
 }
 
