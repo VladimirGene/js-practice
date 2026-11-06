@@ -47,27 +47,26 @@ class Calculator {
 
 	// Удаление выражение на дисплее по симфольно
 	backspace(event) {
-
-		
 		// Если нажата любая другая кнопка прекращаем выполение метода
 		if (event.key !== 'Backspace') return
 		event.preventDefault()
 		// Если на дисплее Ошибка прекращаем дальнейшее выполнение операции(БАГ удаление слово Ошибка по симфольно)
 		if (this.displayValue === this.error) return
+
+		const cut = s => (s || '0').slice(0, -1) || '0'
 		// Если оператор есть И вторе число есть то у второго числа методом слайс удалем элемент с конца и обновляем дисплей
 		if (this.operator !== null && this.currentValue !== '') {
 			this.currentValue = this.currentValue.slice(0, -1)
 			return this.updateDisplay()
 		}
-		// Если оператор есть вызвывыем метода обнуления оператора(null) и очистка второго числа('') и методом слайс удалем с конца символы и обновляем дисплей
+		// Если оператор есть вызвывыем метода обнуления оператора(null) и методом слайс удалем с конца символы и обновляем дисплей
 		if (this.operator !== null) {
 			this.operator = null
-			this.currentValue = ''
-			this.displayValue = this.displayValue.slice(0, -1) || '0'
+			this.displayValue = cut(this.displayValue)
 			return this.updateDisplay()
 		}
 		// Иначе просто удалем с конца символы и обновляем дисплей
-		this.displayValue = this.displayValue.slice(0, -1) || '0'
+		this.displayValue = cut(this.displayValue)
 		this.updateDisplay()
 	}
 
@@ -76,26 +75,19 @@ class Calculator {
 		// Определяем, по какой кнопке кликнули: операция или цифра
 		const operation = event.target.closest('.js-btn-operation')
 		const digit = event.target.closest('.js-btn-digit')
-
+		if (!digit && !operation) return
+		event.preventDefault()
 		// Клик по кнопке-цифре: вводим значение и возвращаем фокус на дисплей
 		if (digit) {
-			event.preventDefault()
-			const digitValue = digit.dataset.value
-			this.inputDigit(digitValue)
-			this.display.focus()
-			return
+			this.inputDigit(digit.dataset.value)
+			return this.display.focus()
 		}
-		// Клик не по кнопке операции — ничего не делаем
-		if (!operation) return
 
 		const operationValue = operation.dataset.value
 		// Клик по кнопке операция вводим оперцию
-		if (operationValue in Calculator.OPERATIONS) {
-			event.preventDefault()
-			this.setOperator(operationValue)
-			this.display.focus()
-			return
-		}
+		if (operationValue in Calculator.OPERATIONS)
+			return this.setOperator(operationValue)
+
 		// Клик по кнопке очиски вызваем метот clear()
 		if (operationValue === 'C') return this.clear()
 		// Клик по кнопке '=' вызваем метот calculate()
