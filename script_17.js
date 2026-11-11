@@ -1,20 +1,19 @@
-// function makeFetch(url) {
-// 	fetch(url)
-// 		.then(result => {
-// 			if (!result.ok) {
-// 				const errorMessage =
-// 					result.status === 404 ? 'Пост не найден' : 'Что-то пошло не так :('
-// 				throw new Error(errorMessage)
-// 			}
-// 			return result.json()
-// 		})
-// 		.then(json => console.log(json))
-// 		.catch(error => {
-// 			console.log(error)
-// 		})
-// }
+function makeFetch(url) {
+	return fetch(url).then(result => {
+		if (!result.ok) {
+			const errorMessage =
+				result.status === 404 ? 'Пост не найден' : 'Что-то пошло не так :('
+			throw new Error(errorMessage)
+		}
+		return result.json()
+	})
+}
 
-// makeFetch('https://jsonplaceholder.typicode.com/posts/1')
+makeFetch('https://jsonplaceholder.typicode.com/posts/1')
+	.then(json => console.log(json))
+	.catch(error => {
+		console.log(error)
+	})
 
 function mockFetchPosts(scenario = 'success') {
 	return new Promise((resolve, reject) => {
@@ -57,13 +56,13 @@ class PostManager {
 	}
 
 	init() {
-		document.addEventListener('click', event => this.bindButton(event))
+		document.addEventListener('click', event => this.handleClick(event))
 	}
 
-	bindButton(event) {
+	handleClick(event) {
 		const btn = event.target.closest('.js-btn')
 
-		if (btn   && !this.isLoading) {
+		if (btn && !this.isLoading) {
 			event.preventDefault()
 			this.loadPosts('https://jsonplaceholder.typicode.com/posts/')
 		}
@@ -73,12 +72,18 @@ class PostManager {
 		this.resultElement.innerHTML = ''
 	}
 
+	createItem(text, className) {
+		const li = document.createElement('li')
+		li.classList.add(className)
+		li.textContent = text
+		this.resultElement.append(li)
+	}
+
 	loadPosts(url) {
 		this.isLoading = true
 		this.#posts = []
-
-		this.resultElement.innerHTML = `<li class="result__loading">Загрузка…</li>`
-
+		this.clearResult()
+		this.createItem('Загрузка…', 'result__loading')
 		this.submitBtn.disabled = true
 
 		fetch(url)
@@ -90,15 +95,16 @@ class PostManager {
 				return response.json()
 			})
 			.then(json => {
+				if (!Array.isArray(json)) {
+					throw new Error('Ошибка данных')
+				}
+
 				this.#posts = json
+
 				this.clearResult()
 
 				if (this.#posts.length === 0) {
-					const li = document.createElement('li')
-					li.classList.add('result__item')
-					li.textContent = 'Постов пока нет'
-					this.resultElement.append(li)
-
+					this.createItem('Постов пока нет', 'result__item')
 					this.submitBtn.textContent = 'Обновить'
 					return
 				}
@@ -123,11 +129,12 @@ class PostManager {
 			})
 			.catch(error => {
 				this.clearResult()
-
-				const li = document.createElement('li')
-				li.classList.add('result__error')
-				li.textContent = 'Не удалось загрузить посты'
-				this.resultElement.append(li)
+				this.createItem(
+					error instanceof TypeError
+						? 'Проблема с сетью. Проверьте подключение.'
+						: error.message,
+					'result__error',
+				)
 
 				this.submitBtn.textContent = 'Попробовать снова'
 
