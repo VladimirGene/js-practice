@@ -9,7 +9,7 @@ function makeFetch(url) {
 	})
 }
 
-makeFetch('https://jsonplaceholder.typicode.com/posts/1')
+makeFetch('https://jsonplaceholder.typicode.com/posts/')
 	.then(json => console.log(json))
 	.catch(error => {
 		console.log(error)
@@ -47,7 +47,7 @@ function mockFetchPosts(scenario = 'success') {
 
 class PostManager {
 	#posts = []
-
+	#url = 'https://jsonplaceholder.typicode.com/posts/'
 	constructor() {
 		this.resultElement = document.querySelector('.result')
 		this.submitBtn = document.querySelector('.js-btn')
@@ -64,7 +64,7 @@ class PostManager {
 
 		if (btn && !this.isLoading) {
 			event.preventDefault()
-			this.loadPosts('https://jsonplaceholder.typicode.com/posts/')
+			this.loadPosts(this.#url)
 		}
 	}
 
@@ -77,6 +77,24 @@ class PostManager {
 		li.classList.add(className)
 		li.textContent = text
 		this.resultElement.append(li)
+	}
+
+	renderPost() {
+		this.#posts.forEach(post => {
+			const { id, title, body } = post
+
+			const li = document.createElement('li')
+			li.classList.add('result__item')
+
+			const h2 = document.createElement('h2')
+			h2.textContent = `${id}. ${title}`
+
+			const p = document.createElement('p')
+			p.textContent = body
+
+			li.append(h2, p)
+			this.resultElement.append(li)
+		})
 	}
 
 	loadPosts(url) {
@@ -100,7 +118,6 @@ class PostManager {
 				}
 
 				this.#posts = json
-
 				this.clearResult()
 
 				if (this.#posts.length === 0) {
@@ -108,23 +125,7 @@ class PostManager {
 					this.submitBtn.textContent = 'Обновить'
 					return
 				}
-
-				this.#posts.forEach(post => {
-					const { id, title, body } = post
-
-					const li = document.createElement('li')
-					li.classList.add('result__item')
-
-					const h2 = document.createElement('h2')
-					h2.textContent = `${id}. ${title}`
-
-					const p = document.createElement('p')
-					p.textContent = body
-
-					li.append(h2, p)
-					this.resultElement.append(li)
-				})
-
+				this.renderPost()
 				this.submitBtn.textContent = 'Обновить'
 			})
 			.catch(error => {
