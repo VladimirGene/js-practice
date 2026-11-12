@@ -80,6 +80,11 @@ class PostManager {
 	}
 
 	renderPost() {
+		if (this.#posts.length === 0) {
+			this.createItem('Постов пока нет', 'result__item')
+			this.submitBtn.textContent = 'Обновить'
+			return
+		}
 		this.#posts.forEach(post => {
 			const { id, title, body } = post
 
@@ -120,11 +125,6 @@ class PostManager {
 				this.#posts = json
 				this.clearResult()
 
-				if (this.#posts.length === 0) {
-					this.createItem('Постов пока нет', 'result__item')
-					this.submitBtn.textContent = 'Обновить'
-					return
-				}
 				this.renderPost()
 				this.submitBtn.textContent = 'Обновить'
 			})
