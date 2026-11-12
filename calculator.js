@@ -40,9 +40,9 @@ class Calculator {
 	}
 
 	backspace(event) {
-		if (event.key !== 'Backspace') return
 		event.preventDefault()
-
+		if (event.key !== 'Backspace') return
+		
 		if (this.displayValue === this.error) return
 
 		const cut = s => s.slice(0, -1)
