@@ -79,7 +79,7 @@ class PostManager {
 		this.resultElement.append(li)
 	}
 
-	renderPost() {
+	renderPosts() {
 		if (this.#posts.length === 0) {
 			this.createItem('Постов пока нет', 'result__item')
 			this.submitBtn.textContent = 'Обновить'
@@ -124,7 +124,6 @@ class PostManager {
 
 				this.#posts = json
 				this.clearResult()
-
 				this.renderPost()
 				this.submitBtn.textContent = 'Обновить'
 			})
@@ -138,8 +137,6 @@ class PostManager {
 				)
 
 				this.submitBtn.textContent = 'Попробовать снова'
-
-				console.error(error)
 			})
 			.finally(() => {
 				this.submitBtn.disabled = false
