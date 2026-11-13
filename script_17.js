@@ -15,57 +15,63 @@ makeFetch('https://jsonplaceholder.typicode.com/posts/')
 		console.log(error)
 	})
 
-function mockFetchPosts(scenario = 'success') {
-	return new Promise((resolve, reject) => {
-		setTimeout(() => {
-			if (scenario === 'network-error') {
-				reject(new TypeError('Ошибка соединения'))
-				return
-			}
-
-			if (scenario === 'http-error') {
-				resolve(new Response(null, { status: 500 }))
-				return
-			}
-
-			const posts =
-				scenario === 'empty'
-					? []
-					: [
-							{ id: 1, title: 'Первый пост', body: 'Текст первого поста.' },
-							{ id: 2, title: 'Второй пост', body: 'Текст второго поста.' },
-						]
-
-			resolve(
-				new Response(JSON.stringify(posts), {
-					headers: { 'Content-Type': 'application/json' },
-				}),
-			)
-		}, 1000)
-	})
-}
-
 class PostManager {
 	#posts = []
-	#url = 'https://jsonplaceholder.typicode.com/posts/'
+	#page = 1
+
 	constructor() {
 		this.resultElement = document.querySelector('.result')
 		this.submitBtn = document.querySelector('.js-btn')
+		this.btnPrev = document.querySelector('.js-btn-pagination-prev')
+		this.btnNext = document.querySelector('.js-btn-pagination-next')
 		this.isLoading = false
+		this.numPage = document.querySelector('.js-num-page')
 		this.init()
 	}
 
 	init() {
 		document.addEventListener('click', event => this.handleClick(event))
+		this.updatePaginationButtons()
+	}
+
+	get url() {
+		return `https://jsonplaceholder.typicode.com/posts?_page=${this.#page}`
 	}
 
 	handleClick(event) {
-		const btn = event.target.closest('.js-btn')
+		const { target } = event
+		const btn = target.closest('.js-btn')
+		const prev = target.closest('.js-btn-pagination-prev')
+		const next = target.closest('.js-btn-pagination-next')
 
 		if (btn && !this.isLoading) {
 			event.preventDefault()
-			this.loadPosts(this.#url)
+			this.loadPosts(this.url)
+			return
 		}
+
+		if (prev && !this.isLoading) {
+			event.preventDefault()
+			if (this.#page > 1) {
+				this.#page = this.#page - 1
+				this.numPage.textContent = this.#page
+				this.loadPosts(this.url)
+			}
+			return
+		}
+		if (next && !this.isLoading) {
+			event.preventDefault()
+			if (this.#page < 10) {
+				this.#page = this.#page + 1
+				this.numPage.textContent = this.#page
+				this.loadPosts(this.url)
+			}
+		}
+	}
+
+	updatePaginationButtons() {
+		this.btnPrev.disabled = this.#page === 1
+		this.btnNext.disabled = this.#page === 10
 	}
 
 	clearResult() {
@@ -108,7 +114,8 @@ class PostManager {
 		this.clearResult()
 		this.createItem('Загрузка…', 'result__loading')
 		this.submitBtn.disabled = true
-
+		this.updatePaginationButtons()
+		
 		fetch(url)
 			.then(response => {
 				if (!response.ok) {
@@ -124,7 +131,7 @@ class PostManager {
 
 				this.#posts = json
 				this.clearResult()
-				this.renderPost()
+				this.renderPosts()
 				this.submitBtn.textContent = 'Обновить'
 			})
 			.catch(error => {
@@ -135,12 +142,14 @@ class PostManager {
 						: error.message,
 					'result__error',
 				)
+				console.log(error)
 
 				this.submitBtn.textContent = 'Попробовать снова'
 			})
 			.finally(() => {
 				this.submitBtn.disabled = false
 				this.isLoading = false
+				this.updatePaginationButtons()
 			})
 	}
 }
