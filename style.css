@@ -945,3 +945,12 @@ h1 {
 	box-shadow: 0 4px 8px rgba(120, 100, 70, 0.25);
 	transform: translateY(-1px);
 }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.result__item {
+    animation: fadeIn 0.3s ease-in-out;
+}
