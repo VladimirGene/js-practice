@@ -53,7 +53,7 @@ class PostManager {
 		const showComment = target.closest('.js-btn-comment')
 		const retryComment = target.closest('.js-btn-retry-comments')
 
-		if (btn || prev || next) {
+		if (btn || prev || next || retryComment || showComment) {
 			event.preventDefault()
 		}
 
