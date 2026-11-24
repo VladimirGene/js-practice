@@ -10,7 +10,6 @@ class PostsManager {
 		this.prev = document.querySelector('.js-btn-pagination-prev')
 		this.next = document.querySelector('.js-btn-pagination-next')
 		this.numPage = document.querySelector('.js-num-page')
-		this.showCommentsBtn = document.querySelector('.js-show-comments-btn')
 		this.init()
 	}
 

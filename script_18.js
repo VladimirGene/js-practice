@@ -3,6 +3,9 @@ class PostsManager {
 	#url = 'https://jsonplaceholder.typicode.com/posts'
 	#page = 1
 	#commentsCache = new Map()
+	#limit = 5
+	#totalPages = 0
+	#requestedPage = 1
 
 	constructor() {
 		this.btnLoad = document.querySelector('.js-btn-load')
@@ -10,6 +13,7 @@ class PostsManager {
 		this.prev = document.querySelector('.js-btn-pagination-prev')
 		this.next = document.querySelector('.js-btn-pagination-next')
 		this.numPage = document.querySelector('.js-num-page')
+		this.numTotalPage = document.querySelector('.js-total-page')
 		this.init()
 	}
 
@@ -30,32 +34,39 @@ class PostsManager {
 		}
 
 		if (btnLoad) {
-			this.loadPosts(this.getUrl(this.#url, this.#page), this.#page)
+			this.loadPosts(
+				this.getUrl(this.#url, this.#requestedPage),
+				this.#requestedPage,
+			)
 			return
 		}
 
 		if (btnPrev) {
-			const targetPage = this.#page - 1
-			this.loadPosts(this.getUrl(this.#url, targetPage), targetPage)
+			this.#requestedPage = this.#page - 1
+			this.loadPosts(
+				this.getUrl(this.#url, this.#requestedPage),
+				this.#requestedPage,
+			)
 			return
 		}
 		if (btnNext) {
-			const targetPage = this.#page + 1
-			this.loadPosts(this.getUrl(this.#url, targetPage), targetPage)
+			this.#requestedPage = this.#page + 1
+			this.loadPosts(
+				this.getUrl(this.#url, this.#requestedPage),
+				this.#requestedPage,
+			)
 			return
 		}
 
 		if (showCommentsBtn) {
 			const id = showCommentsBtn.dataset.postId
+			const isExpanded = showCommentsBtn.dataset.expanded === 'true'
 
-			if (showCommentsBtn.textContent === 'Скрыть комментарии') {
+			if (isExpanded) {
 				this.deleteComments(id)
 				return
 			}
-			if (showCommentsBtn.textContent === 'Показать комментарии') {
-				this.loadComments(this.getUrlComments(this.#url, id), id)
-				return
-			}
+			this.loadComments(this.getUrlComments(this.#url, id), id)
 		}
 	}
 
@@ -70,21 +81,22 @@ class PostsManager {
 		if (!comments) return
 		comments.innerHTML = ''
 		btn.textContent = 'Показать комментарии'
+		btn.dataset.expanded = 'false'
 	}
 
 	lockBtn() {
 		if (this.#posts.length === 0) {
 			this.prev.disabled = true
-			this.next.disabled = true
 			return
 		}
 		this.prev.disabled = this.#page === 1
-		this.next.disabled = this.#page === this.#posts.length
+		this.next.disabled = this.#page === this.#totalPages
 	}
 
-	getUrl(url, page = this.#page) {
+	getUrl(url, page = this.#page, limit = this.#limit) {
 		const params = new URLSearchParams()
 		params.set('_page', page)
+		params.set('_limit', limit)
 		return `${url}?${params}`
 	}
 
@@ -103,14 +115,21 @@ class PostsManager {
 	async loadPosts(url, page) {
 		this.#posts = []
 		this.clearItem()
-		this.createItem('Загрузка...', 'post__loading', this.postsList)
+		this.createItem('Загрузка...', 'post__loading')
 		this.btnLoad.disabled = true
 
 		try {
 			const response = await fetch(url)
+
 			if (!response.ok) {
 				throw new Error('Не удалось загрузить посты')
 			}
+
+			let totalCount = response.headers.get('X-Total-Count')
+			if (totalCount === null) {
+				throw new Error('Не удалось загрузить список. Попробуйте ещё раз.')
+			}
+			this.#totalPages = Math.ceil(Number(totalCount) / this.#limit)
 
 			const posts = await response.json()
 
@@ -120,6 +139,7 @@ class PostsManager {
 
 			this.#posts = posts
 			this.#page = page
+			this.numTotalPage.textContent = this.#totalPages
 			this.numPage.textContent = this.#page
 			this.clearItem()
 			this.renderPosts()
@@ -162,6 +182,7 @@ class PostsManager {
 			showCommentsBtn.classList.add('js-show-comments-btn', 'btn')
 			showCommentsBtn.textContent = 'Показать комментарии'
 			showCommentsBtn.dataset.postId = id
+			showCommentsBtn.dataset.expanded = 'false'
 
 			const ulComments = document.createElement('ul')
 			ulComments.classList.add('comments__list')
@@ -181,7 +202,22 @@ class PostsManager {
 		const btnComments = document.querySelector(
 			`.js-show-comments-btn[data-post-id="${postId}"]`,
 		)
-		this.#commentsCache.clear()
+
+		if (this.#commentsCache.has(postId)) {
+			this.renderComments(postId)
+			btnComments.textContent = 'Скрыть комментарии'
+			btnComments.dataset.expanded = 'true'
+			return
+		}
+
+		const ulEl = document.querySelector(
+			`.comments__list[data-post-id="${postId}"]`,
+		)
+		if (ulEl) {
+			ulEl.innerHTML = '<li class="comments__loading">Загрузка...</li>'
+		}
+		btnComments.disabled = true
+
 		try {
 			const response = await fetch(url)
 			if (!response.ok) {
@@ -194,16 +230,22 @@ class PostsManager {
 				throw new Error('Ошибка данных')
 			}
 
-			comments.forEach(comment => {
-				this.#commentsCache.set(comment.id, comment)
-			})
-			btnComments.textContent = 'Скрыть комментарии'
+			this.#commentsCache.set(postId, comments)
 			this.renderComments(postId)
+			btnComments.textContent = 'Скрыть комментарии'
+			btnComments.dataset.expanded = 'true'
 		} catch (error) {
+			if (ulEl) {
+				ulEl.innerHTML = ''
+			}
 			if (btnComments) {
 				btnComments.textContent = 'Попробовать снова'
 			}
 			console.error(error)
+		} finally {
+			if (btnComments) {
+				btnComments.disabled = false
+			}
 		}
 	}
 
@@ -212,12 +254,14 @@ class PostsManager {
 			`.comments__list[data-post-id="${postId}"]`,
 		)
 		if (!ulEl) return
-		ulEl.innerHTML = ''
+		const comments = this.#commentsCache.get(postId)
+		if (!comments) return
 
-		this.#commentsCache.forEach(value => {
+		ulEl.innerHTML = ''
+		comments.forEach(comment => {
 			const li = document.createElement('li')
 			li.classList.add('comments__item')
-			li.textContent = value.body
+			li.textContent = comment.body
 			ulEl.append(li)
 		})
 	}
