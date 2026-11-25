@@ -5,7 +5,7 @@
 }
 
 :root {
-	--bg: #f5f0e6;
+	--bg: var(--color-light);
 	--ink: #111111;
 	--paper: #ffffff;
 	--cream: #fffdf7;
@@ -16,11 +16,18 @@
 	--blue: #4d7cff;
 	--pink: #ff7aa2;
 
+	--color-light: #f5f0e6;
+	--color-dark: #726140;
+
 	--border: 3px solid var(--ink);
 	--border-thick: 4px solid var(--ink);
 	--shadow: 6px 6px 0 var(--ink);
 	--shadow-sm: 4px 4px 0 var(--ink);
 	--shadow-lg: 9px 9px 0 var(--ink);
+}
+
+html.is-dark-theme {
+	--bg: var(--color-dark);
 }
 
 body {

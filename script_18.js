@@ -19,6 +19,7 @@ class PostsManager {
 
 	init() {
 		document.addEventListener('click', event => this.handleClick(event))
+
 		this.lockBtn()
 	}
 
@@ -126,6 +127,7 @@ class PostsManager {
 			}
 
 			let totalCount = response.headers.get('X-Total-Count')
+
 			if (totalCount === null) {
 				throw new Error('Не удалось загрузить список. Попробуйте ещё раз.')
 			}
