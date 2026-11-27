@@ -19,17 +19,32 @@ class ListTask {
 		this.input = document.querySelector('.js-input')
 		this.button = document.querySelector('.js-btn-todo')
 		this.list = document.querySelector('.js-list')
+		this.btnSort = document.querySelector('.js-btn-sort')
+		this.statusSort = document.querySelector('.js-status-sort')
 
 		this.todos = this.getTodosToLocalStorage() || []
 		this.nextId = this.todos.length
 			? Math.max(...this.todos.map(t => t.id)) + 1
 			: 1
+		this.sortMode = 'default'
+		this.sortLabels = {
+			default: 'По умолчанию',
+			activeFirst: 'Сначала невыполненные',
+			doneFirst: 'Сначала выполненные',
+		}
 		this.init()
 	}
 
 	init() {
 		this.button.addEventListener('click', () => this.createTodo())
 		this.list.addEventListener('click', event => this.handleListClick(event))
+		this.btnSort.addEventListener('click', () => this.toggleSort())
+		this.renderTodo()
+	}
+
+	toggleSort() {
+		const modes = ['default', 'activeFirst', 'doneFirst']
+		this.sortMode = modes[(modes.indexOf(this.sortMode) + 1) % modes.length]
 		this.renderTodo()
 	}
 
@@ -45,8 +60,8 @@ class ListTask {
 		const li = event.target.closest('.js-todo')
 		if (!li) return
 
-		const deleteButton = event.target.closest('.js-close-btn')
 		const id = Number(li.dataset.id)
+		const deleteButton = event.target.closest('.js-close-btn')
 
 		if (deleteButton) {
 			this.deleteTodo(id)
@@ -82,8 +97,23 @@ class ListTask {
 	}
 
 	renderTodo() {
+		const sorted = [...this.todos]
 		this.list.innerHTML = ''
-		for (const todo of this.todos) {
+
+		if (this.sortMode === 'default')
+			this.statusSort.textContent = this.sortLabels[this.sortMode]
+
+		if (this.sortMode === 'activeFirst') {
+			sorted.sort((a, b) => Number(a.isCompleted) - Number(b.isCompleted))
+			this.statusSort.textContent = this.sortLabels[this.sortMode]
+		}
+
+		if (this.sortMode === 'doneFirst') {
+			sorted.sort((a, b) => Number(b.isCompleted) - Number(a.isCompleted))
+			this.statusSort.textContent = this.sortLabels[this.sortMode]
+		}
+
+		for (const todo of sorted) {
 			const li = document.createElement('li')
 			li.classList.add('todos', 'js-todo')
 			li.classList.toggle('done', todo.isCompleted)
