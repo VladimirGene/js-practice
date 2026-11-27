@@ -1,95 +1,156 @@
-function makeFetch(url) {
-	return fetch(url).then(result => {
-		if (!result.ok) {
-			const errorMessage =
-				result.status === 404 ? 'Пост не найден' : 'Что-то пошло не так :('
-			throw new Error(errorMessage)
-		}
-		return result.json()
-	})
-}
-
-makeFetch('https://jsonplaceholder.typicode.com/posts/')
-	.then(json => console.log(json))
-	.catch(error => {
-		console.log(error)
-	})
-
-function mockFetchPosts(scenario = 'success') {
-	return new Promise((resolve, reject) => {
-		setTimeout(() => {
-			if (scenario === 'network-error') {
-				reject(new TypeError('Ошибка соединения'))
-				return
-			}
-
-			if (scenario === 'http-error') {
-				resolve(new Response(null, { status: 500 }))
-				return
-			}
-
-			const posts =
-				scenario === 'empty'
-					? []
-					: [
-							{ id: 1, title: 'Первый пост', body: 'Текст первого поста.' },
-							{ id: 2, title: 'Второй пост', body: 'Текст второго поста.' },
-						]
-
-			resolve(
-				new Response(JSON.stringify(posts), {
-					headers: { 'Content-Type': 'application/json' },
-				}),
-			)
-		}, 1000)
-	})
-}
-
-class PostManager {
+class PostsManager {
 	#posts = []
-	#url = 'https://jsonplaceholder.typicode.com/posts/'
+	#url = 'https://jsonplaceholder.typicode.com/posts'
+	#page = 1
+	#commentsCache = new Map()
+
 	constructor() {
-		this.resultElement = document.querySelector('.result')
-		this.submitBtn = document.querySelector('.js-btn')
-		this.isLoading = false
+		this.btnLoad = document.querySelector('.js-btn-load')
+		this.postsList = document.querySelector('.post__list')
+		this.prev = document.querySelector('.js-btn-pagination-prev')
+		this.next = document.querySelector('.js-btn-pagination-next')
+		this.numPage = document.querySelector('.js-num-page')
 		this.init()
 	}
 
 	init() {
 		document.addEventListener('click', event => this.handleClick(event))
+		this.lockBtn()
 	}
 
 	handleClick(event) {
-		const btn = event.target.closest('.js-btn')
+		const { target } = event
+		const btnLoad = target.closest('.js-btn-load')
+		const btnPrev = target.closest('.js-btn-pagination-prev')
+		const btnNext = target.closest('.js-btn-pagination-next')
+		const showCommentsBtn = target.closest('.js-show-comments-btn')
 
-		if (btn && !this.isLoading) {
+		if (btnLoad || btnPrev || btnNext || showCommentsBtn) {
 			event.preventDefault()
-			this.loadPosts(this.#url)
+		}
+
+		if (btnLoad) {
+			this.loadPosts(this.getUrl(this.#url, this.#page), this.#page)
+			return
+		}
+
+		if (btnPrev) {
+			const targetPage = this.#page - 1
+			this.loadPosts(this.getUrl(this.#url, targetPage), targetPage)
+			return
+		}
+		if (btnNext) {
+			const targetPage = this.#page + 1
+			this.loadPosts(this.getUrl(this.#url, targetPage), targetPage)
+			return
+		}
+
+		if (showCommentsBtn) {
+			const id = showCommentsBtn.dataset.postId
+
+			if (showCommentsBtn.textContent === 'Скрыть комментарии') {
+				this.deleteComments(id)
+				return
+			}
+			if (showCommentsBtn.textContent === 'Показать комментарии') {
+				this.loadComments(this.getUrlComments(this.#url, id), id)
+				return
+			}
 		}
 	}
 
-	clearResult() {
-		this.resultElement.innerHTML = ''
+	deleteComments(postId) {
+		const comments = document.querySelector(
+			`.comments__list[data-post-id="${postId}"]`,
+		)
+		const btn = document.querySelector(
+			`.js-show-comments-btn[data-post-id="${postId}"]`,
+		)
+		if (!btn) return
+		if (!comments) return
+		comments.innerHTML = ''
+		btn.textContent = 'Показать комментарии'
+	}
+
+	lockBtn() {
+		if (this.#posts.length === 0) {
+			this.prev.disabled = true
+			this.next.disabled = true
+			return
+		}
+		this.prev.disabled = this.#page === 1
+		this.next.disabled = this.#page === this.#posts.length
+	}
+
+	getUrl(url, page = this.#page) {
+		const params = new URLSearchParams()
+		params.set('_page', page)
+		return `${url}?${params}`
+	}
+
+	clearItem() {
+		this.postsList.innerHTML = ''
 	}
 
 	createItem(text, className) {
 		const li = document.createElement('li')
 		li.classList.add(className)
 		li.textContent = text
-		this.resultElement.append(li)
+		this.postsList.append(li)
+		return li
+	}
+
+	async loadPosts(url, page) {
+		this.#posts = []
+		this.clearItem()
+		this.createItem('Загрузка...', 'post__loading', this.postsList)
+		this.btnLoad.disabled = true
+
+		try {
+			const response = await fetch(url)
+			if (!response.ok) {
+				throw new Error('Не удалось загрузить посты')
+			}
+
+			const posts = await response.json()
+
+			if (!Array.isArray(posts)) {
+				throw new Error('Ошибка данных')
+			}
+
+			this.#posts = posts
+			this.#page = page
+			this.numPage.textContent = this.#page
+			this.clearItem()
+			this.renderPosts()
+			this.btnLoad.textContent = 'Обновить'
+		} catch (error) {
+			this.clearItem()
+			this.createItem(
+				error instanceof TypeError
+					? 'Проблема с сетью. Проверьте подключение.'
+					: error.message,
+				'result__error',
+			)
+			this.btnLoad.textContent = 'Попробовать снова'
+			console.log(error)
+		} finally {
+			this.btnLoad.disabled = false
+			this.lockBtn()
+		}
 	}
 
 	renderPosts() {
 		if (this.#posts.length === 0) {
-			this.createItem('Постов пока нет', 'result__item')
-			this.submitBtn.textContent = 'Обновить'
-			return
+			this.createItem('Постов пока нет', 'list__item')
+			this.btnLoad.textContent = 'Обновить'
 		}
 		this.#posts.forEach(post => {
 			const { id, title, body } = post
 
 			const li = document.createElement('li')
-			li.classList.add('result__item')
+			li.classList.add('post__item')
+			li.dataset.postId = id
 
 			const h2 = document.createElement('h2')
 			h2.textContent = `${id}. ${title}`
@@ -97,52 +158,69 @@ class PostManager {
 			const p = document.createElement('p')
 			p.textContent = body
 
-			li.append(h2, p)
-			this.resultElement.append(li)
+			const showCommentsBtn = document.createElement('button')
+			showCommentsBtn.classList.add('js-show-comments-btn', 'btn')
+			showCommentsBtn.textContent = 'Показать комментарии'
+			showCommentsBtn.dataset.postId = id
+
+			const ulComments = document.createElement('ul')
+			ulComments.classList.add('comments__list')
+			ulComments.dataset.postId = id
+
+			li.append(h2, p, showCommentsBtn, ulComments)
+
+			this.postsList.append(li)
 		})
 	}
 
-	loadPosts(url) {
-		this.isLoading = true
-		this.#posts = []
-		this.clearResult()
-		this.createItem('Загрузка…', 'result__loading')
-		this.submitBtn.disabled = true
+	getUrlComments(url, postId) {
+		return `${url}/${postId}/comments`
+	}
 
-		fetch(url)
-			.then(response => {
-				if (!response.ok) {
-					throw new Error('Не удалось загрузить посты')
-				}
+	async loadComments(url, postId) {
+		const btnComments = document.querySelector(
+			`.js-show-comments-btn[data-post-id="${postId}"]`,
+		)
+		this.#commentsCache.clear()
+		try {
+			const response = await fetch(url)
+			if (!response.ok) {
+				throw new Error('Не удалось загрузить комментарии')
+			}
 
-				return response.json()
-			})
-			.then(json => {
-				if (!Array.isArray(json)) {
-					throw new Error('Ошибка данных')
-				}
+			const comments = await response.json()
 
-				this.#posts = json
-				this.clearResult()
-				this.renderPost()
-				this.submitBtn.textContent = 'Обновить'
-			})
-			.catch(error => {
-				this.clearResult()
-				this.createItem(
-					error instanceof TypeError
-						? 'Проблема с сетью. Проверьте подключение.'
-						: error.message,
-					'result__error',
-				)
+			if (!Array.isArray(comments)) {
+				throw new Error('Ошибка данных')
+			}
 
-				this.submitBtn.textContent = 'Попробовать снова'
+			comments.forEach(comment => {
+				this.#commentsCache.set(comment.id, comment)
 			})
-			.finally(() => {
-				this.submitBtn.disabled = false
-				this.isLoading = false
-			})
+			btnComments.textContent = 'Скрыть комментарии'
+			this.renderComments(postId)
+		} catch (error) {
+			if (btnComments) {
+				btnComments.textContent = 'Попробовать снова'
+			}
+			console.error(error)
+		}
+	}
+
+	renderComments(postId) {
+		const ulEl = document.querySelector(
+			`.comments__list[data-post-id="${postId}"]`,
+		)
+		if (!ulEl) return
+		ulEl.innerHTML = ''
+
+		this.#commentsCache.forEach(value => {
+			const li = document.createElement('li')
+			li.classList.add('comments__item')
+			li.textContent = value.body
+			ulEl.append(li)
+		})
 	}
 }
 
-new PostManager()
+new PostsManager()

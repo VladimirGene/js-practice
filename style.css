@@ -5,7 +5,7 @@
 }
 
 :root {
-	--bg: #f5f0e6;
+	--bg: var(--color-light);
 	--ink: #111111;
 	--paper: #ffffff;
 	--cream: #fffdf7;
@@ -16,11 +16,18 @@
 	--blue: #4d7cff;
 	--pink: #ff7aa2;
 
+	--color-light: #f5f0e6;
+	--color-dark: #726140;
+
 	--border: 3px solid var(--ink);
 	--border-thick: 4px solid var(--ink);
 	--shadow: 6px 6px 0 var(--ink);
 	--shadow-sm: 4px 4px 0 var(--ink);
 	--shadow-lg: 9px 9px 0 var(--ink);
+}
+
+html.is-dark-theme {
+	--bg: var(--color-dark);
 }
 
 body {
@@ -669,8 +676,11 @@ h1 {
 }
 
 .load-todo-form {
+	display: flex;
+	justify-content: center;
+	align-items: center;
 	width: 25rem;
-	height: 10.75rem;
+	height: 15.625rem;
 	background: #c9b291;
 	padding: 1.875rem;
 	border-radius: 0.625rem;
@@ -684,7 +694,7 @@ h1 {
 }
 
 /* ---------- Контейнер результатов ---------- */
-.result {
+.post__list {
 	display: flex;
 	flex-direction: column;
 	gap: 1rem;
@@ -696,13 +706,13 @@ h1 {
 }
 
 @media (max-width: 576px) {
-	.result {
+	.post__list {
 		max-width: 15.625rem;
 	}
 }
 
 /* ---------- Карточка поста ---------- */
-.result__item {
+.post__item {
 	position: relative;
 	display: flex;
 	flex-direction: column;
@@ -723,7 +733,7 @@ h1 {
 		box-shadow 0.15s ease;
 }
 
-.result__loading {
+.post__loading {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -744,7 +754,7 @@ h1 {
 		box-shadow 0.15s ease;
 }
 
-.result__item::before {
+.post__item::before {
 	content: '';
 	position: absolute;
 	top: 0.75rem;
@@ -756,20 +766,20 @@ h1 {
 	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
-.result__item:nth-child(4n + 1)::before {
+.post__item:nth-child(4n + 1)::before {
 	background: #b08f52;
 }
-.result__item:nth-child(4n + 2)::before {
+.post__item:nth-child(4n + 2)::before {
 	background: #a5854c;
 }
-.result__item:nth-child(4n + 3)::before {
+.post__item:nth-child(4n + 3)::before {
 	background: #c9a86a;
 }
-.result__item:nth-child(4n + 4)::before {
+.post__item:nth-child(4n + 4)::before {
 	background: #8f7038;
 }
 
-.result__item:hover {
+.post__item:hover {
 	transform: translate(-2px, -2px);
 	box-shadow:
 		0 5px 0 #8f7038,
@@ -778,7 +788,7 @@ h1 {
 }
 
 /* ---------- Заголовок поста ---------- */
-.result__item h2 {
+.post__item h2 {
 	margin: 0;
 	font-size: 1.05rem;
 	font-weight: 700;
@@ -789,7 +799,7 @@ h1 {
 }
 
 /* ---------- Текст поста ---------- */
-.result__item p {
+.post__item p {
 	margin: 0;
 	font-size: 0.95rem;
 	font-weight: 400;
@@ -798,43 +808,44 @@ h1 {
 }
 
 @media (max-width: 576px) {
-	.result__item {
+	.post__item {
 		min-width: 0;
 		width: 100%;
 		padding: 1.25rem 1.25rem 1.5rem 1.75rem;
 		gap: 0.5rem;
 	}
 
-	.result__item h2 {
+	.post__item h2 {
 		font-size: 1rem;
 	}
 
-	.result__item p {
+	.post__item p {
 		font-size: 0.9rem;
 	}
 }
 
 @media (max-width: 380px) {
-	.result__item {
+	.post__item {
 		padding: 1rem 1rem 1.25rem 1.5rem;
 	}
 
-	.result__item h2 {
+	.post__item h2 {
 		font-size: 0.95rem;
 	}
 
-	.result__item p {
+	.post__item p {
 		font-size: 0.85rem;
 	}
 }
 
-button:disabled {
+.btn:disabled,
+.btn-pagination:disabled {
 	cursor: not-allowed;
 	background-color: #919090;
 }
 
 /* ---------- Карточка ошибки ---------- */
-.result__error {
+.post__error {
 	position: relative;
 	display: flex;
 	flex-direction: column;
@@ -860,8 +871,8 @@ button:disabled {
 		box-shadow 0.15s ease;
 }
 
-/* цветной «корешок» слева — как у .todos::before и .result__item::before */
-.result__error::before {
+/* цветной «корешок» слева — как у .todos::before и .post__item::before */
+.post__error::before {
 	content: '!';
 	position: absolute;
 	top: 0.75rem;
@@ -876,7 +887,7 @@ button:disabled {
 	font-size: 0;
 }
 
-.result__error:hover {
+.post__error:hover {
 	transform: translate(-2px, -2px);
 	box-shadow:
 		0 5px 0 #b32d2d,
@@ -885,8 +896,8 @@ button:disabled {
 }
 
 /* ---------- Заголовок ошибки (если добавишь <strong>/<h3>) ---------- */
-.result__error strong,
-.result__error h3 {
+.post__error strong,
+.post__error h3 {
 	margin: 0;
 	font-size: 1.05rem;
 	font-weight: 900;
@@ -897,7 +908,7 @@ button:disabled {
 
 /* ---------- Мобильные ---------- */
 @media (max-width: 576px) {
-	.result__error {
+	.post__error {
 		min-width: 0;
 		width: 100%;
 		padding: 1.25rem 1.25rem 1.5rem 1.75rem;
@@ -906,8 +917,53 @@ button:disabled {
 }
 
 @media (max-width: 380px) {
-	.result__error {
+	.post__error {
 		padding: 1rem 1rem 1.25rem 1.5rem;
 		font-size: 0.9rem;
 	}
+}
+
+.paginagion {
+	display: flex;
+	gap: 1.875rem;
+	justify-content: center;
+}
+
+.btn,
+.btn-pagination {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 8px 16px;
+	font-size: 15px;
+	font-weight: 600;
+	color: #4a4030;
+	cursor: pointer;
+	background: #fdfbf5;
+	border: 1px solid #e0d8c4;
+	border-radius: 4px;
+	box-shadow: 0 2px 4px rgba(120, 100, 70, 0.2);
+	transition: 0.15s;
+}
+
+.btn:hover,
+.btn-pagination:hover {
+	background: #fffef9;
+	box-shadow: 0 4px 8px rgba(120, 100, 70, 0.25);
+	transform: translateY(-1px);
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.post__item {
+	animation: fadeIn 0.3s ease-in-out;
 }
