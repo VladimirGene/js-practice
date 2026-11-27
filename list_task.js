@@ -19,14 +19,26 @@ class ListTask {
 		this.input = document.querySelector('.js-input')
 		this.button = document.querySelector('.js-btn-todo')
 		this.list = document.querySelector('.js-list')
-		this.nextId = 1
-		this.todos = []
+
+		this.todos = this.getTodosToLocalStorage() || []
+		this.nextId = this.todos.length
+			? Math.max(...this.todos.map(t => t.id)) + 1
+			: 1
 		this.init()
 	}
 
 	init() {
 		this.button.addEventListener('click', () => this.createTodo())
 		this.list.addEventListener('click', event => this.handleListClick(event))
+		this.renderTodo()
+	}
+
+	setTodosFromLocalStorage(todos) {
+		localStorage.setItem('todos', JSON.stringify(todos))
+	}
+
+	getTodosToLocalStorage() {
+		return JSON.parse(localStorage.getItem('todos'))
 	}
 
 	handleListClick(event) {
@@ -47,7 +59,9 @@ class ListTask {
 		const text = this.input.value.trim()
 		if (!text) return
 		const todo = { id: this.nextId++, text: text, isCompleted: false }
+
 		this.todos.push(todo)
+		this.setTodosFromLocalStorage(this.todos)
 		this.input.value = ''
 		this.renderTodo()
 	}
@@ -57,11 +71,13 @@ class ListTask {
 		if (!todo) return
 
 		todo.isCompleted = !todo.isCompleted
+		this.setTodosFromLocalStorage(this.todos)
 		this.renderTodo()
 	}
 
 	deleteTodo(id) {
 		this.todos = this.todos.filter(item => item.id !== id)
+		this.setTodosFromLocalStorage(this.todos)
 		this.renderTodo()
 	}
 
