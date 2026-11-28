@@ -15,23 +15,22 @@
 */
 
 class ListTask {
+	#SORT_LABELS = {
+		default: 'По умолчанию',
+		activeFirst: 'Сначала невыполненные',
+		doneFirst: 'Сначала выполненные',
+	}
+
 	constructor() {
 		this.input = document.querySelector('.js-input')
 		this.button = document.querySelector('.js-btn-todo')
 		this.list = document.querySelector('.js-list')
 		this.btnSort = document.querySelector('.js-btn-sort')
 		this.statusSort = document.querySelector('.js-status-sort')
+		this.todos = this.getTodosFromLocalStorage()
+		this.nextId = Date.now()
+		this.currentSort = 'default'
 
-		this.todos = this.getTodosToLocalStorage() || []
-		this.nextId = this.todos.length
-			? Math.max(...this.todos.map(t => t.id)) + 1
-			: 1
-		this.sortMode = 'default'
-		this.sortLabels = {
-			default: 'По умолчанию',
-			activeFirst: 'Сначала невыполненные',
-			doneFirst: 'Сначала выполненные',
-		}
 		this.init()
 	}
 
@@ -43,17 +42,30 @@ class ListTask {
 	}
 
 	toggleSort() {
-		const modes = ['default', 'activeFirst', 'doneFirst']
-		this.sortMode = modes[(modes.indexOf(this.sortMode) + 1) % modes.length]
+		switch (this.currentSort) {
+			case 'default':
+				this.currentSort = 'activeFirst'
+				break
+			case 'activeFirst':
+				this.currentSort = 'doneFirst'
+				break
+			case 'doneFirst':
+				this.currentSort = 'default'
+				break
+		}
 		this.renderTodo()
 	}
 
-	setTodosFromLocalStorage(todos) {
+	setTodosToLocalStorage(todos) {
 		localStorage.setItem('todos', JSON.stringify(todos))
 	}
 
-	getTodosToLocalStorage() {
-		return JSON.parse(localStorage.getItem('todos'))
+	getTodosFromLocalStorage() {
+		try {
+			return JSON.parse(localStorage.getItem('todos')) ?? []
+		} catch {
+			return []
+		}
 	}
 
 	handleListClick(event) {
@@ -61,9 +73,8 @@ class ListTask {
 		if (!li) return
 
 		const id = Number(li.dataset.id)
-		const deleteButton = event.target.closest('.js-close-btn')
 
-		if (deleteButton) {
+		if (event.target.closest('.js-close-btn')) {
 			this.deleteTodo(id)
 			return
 		}
@@ -73,10 +84,9 @@ class ListTask {
 	createTodo() {
 		const text = this.input.value.trim()
 		if (!text) return
-		const todo = { id: this.nextId++, text: text, isCompleted: false }
 
-		this.todos.push(todo)
-		this.setTodosFromLocalStorage(this.todos)
+		this.todos.push({ id: this.nextId++, text, isCompleted: false })
+		this.setTodosToLocalStorage(this.todos)
 		this.input.value = ''
 		this.renderTodo()
 	}
@@ -86,32 +96,37 @@ class ListTask {
 		if (!todo) return
 
 		todo.isCompleted = !todo.isCompleted
-		this.setTodosFromLocalStorage(this.todos)
+		this.setTodosToLocalStorage(this.todos)
 		this.renderTodo()
 	}
 
 	deleteTodo(id) {
 		this.todos = this.todos.filter(item => item.id !== id)
-		this.setTodosFromLocalStorage(this.todos)
+		this.setTodosToLocalStorage(this.todos)
 		this.renderTodo()
+	}
+
+	changeStatus(label) {
+		this.statusSort.textContent = label
 	}
 
 	renderTodo() {
 		const sorted = [...this.todos]
+
+		switch (this.currentSort) {
+			case 'activeFirst':
+				sorted.sort((a, b) => Number(a.isCompleted) - Number(b.isCompleted))
+				this.changeStatus(this.#SORT_LABELS.activeFirst)
+				break
+			case 'doneFirst':
+				sorted.sort((a, b) => Number(b.isCompleted) - Number(a.isCompleted))
+				this.changeStatus(this.#SORT_LABELS.doneFirst)
+				break
+			default:
+				this.changeStatus(this.#SORT_LABELS.default)
+		}
+
 		this.list.innerHTML = ''
-
-		if (this.sortMode === 'default')
-			this.statusSort.textContent = this.sortLabels[this.sortMode]
-
-		if (this.sortMode === 'activeFirst') {
-			sorted.sort((a, b) => Number(a.isCompleted) - Number(b.isCompleted))
-			this.statusSort.textContent = this.sortLabels[this.sortMode]
-		}
-
-		if (this.sortMode === 'doneFirst') {
-			sorted.sort((a, b) => Number(b.isCompleted) - Number(a.isCompleted))
-			this.statusSort.textContent = this.sortLabels[this.sortMode]
-		}
 
 		for (const todo of sorted) {
 			const li = document.createElement('li')
